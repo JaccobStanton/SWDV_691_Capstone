@@ -1,0 +1,31 @@
+.input-group-input,
+.rename-drone-button {
+  flex-grow: 1; /* Allow both elements to grow and fill the container */
+  margin: 0 10px; /* Adjust margin for spacing, reducing it to ensure full width utilization */
+}
+
+.input-group-input {
+  width: 100%; /* Set a fixed width */
+  height: 35px; /* Set a fixed height */
+  text-align: center;
+  border-radius: 4px;
+  border: 0.5px solid #474a4e;
+  background-color: transparent;
+  margin: 0 8px; /* Add some space between elements */
+  font-size: 0.75rem;
+  flex-basis: 0; /* Start with 0 width before growing */
+  flex-grow: 3;
+}
+
+.rename-drone-button {
+  width: 45%;
+  cursor: pointer;
+  flex-basis: 0;
+  border: 1px solid #48f7f5;
+  color: #48f7f5;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 4px; /* Optional: Adds rounded corners to the button */
+  padding: 10px 0; /* Adjust padding to vertically center text, if necessary */
+  background-color: transparent; /* Optional: Set background color */
+}
