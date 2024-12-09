@@ -11,7 +11,7 @@
 	<!ENTITY ns_adobe_xpath "http://ns.adobe.com/XPath/1.0/">
 ]>
 <svg version="1.1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
-	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 172.7 26.4"
+	 xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 200.7 26.4"
 	 style="enable-background:new 0 0 172.7 26.4;" xml:space="preserve">
 <style type="text/css">
 	.st0{fill:#E8E8E8;}
@@ -28,4 +28,5 @@
 	<path class="st1" d="M25.8,12.4l0,13.5L0,25.9l0-1.8C0,24.1,15.5,25.2,25.8,12.4z"/>
 	<path class="st1" d="M25.8,0L0,0l0,22.7C0,22.7,20.6,22.1,25.8,0z"/>
 </g>
+<text x="35" y="21.5" font-family="Motiva Sans Bold, sans-serif" fill="#e0e0e0" font-size="22.5px" font-weight="400">AgriScan</text>
 </svg>

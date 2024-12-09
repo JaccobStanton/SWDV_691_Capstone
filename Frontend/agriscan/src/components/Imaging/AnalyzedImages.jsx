@@ -55,7 +55,7 @@ function AnalyzedImages() {
       id: "1",
       date: "02/20/2021",
       time: "13:45",
-      customerId: "FieldDock_1",
+      customerId: "AgriScan_1",
       type: "Orthomosiac",
     },
   ];

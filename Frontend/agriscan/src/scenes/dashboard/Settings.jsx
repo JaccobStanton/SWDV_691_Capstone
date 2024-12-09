@@ -71,9 +71,9 @@ function Settings() {
           </div>
         </div>
         <div className="setting-box">
-          <div className="title-box">Rename this FieldDock</div>
+          <div className="title-box">Rename AgriScan System</div>
           <div className="inner-box">
-            <div className="box-item text-center">FieldDock Station 1:</div>
+            <div className="box-item text-center">AgriScan Station 1:</div>
             <div className="box-item">
               <input
                 type="text"

@@ -7,13 +7,13 @@ import Misc from "../../components/Index/Misc";
 import EnvConds from "../../components/Index/EnvCond";
 import SoilConds from "../../components/Index/SoilConditions";
 import DroneSVG from "../../assets/svg/Drone_FieldDock.svg";
-import FieldDockBodySVG from "../../assets/svg/FieldDock_Body.svg";
+import AgriScanBodySVG from "../../assets/svg/FieldDock_Body.svg";
 
 function HomePage() {
   return (
     <>
       <div className="page-title-box">
-        <h3>FieldDock Dashboard</h3>
+        <h3>AgriScan Dashboard</h3>
       </div>
       <div className="main-grid">
         <GDD />
@@ -34,7 +34,7 @@ function HomePage() {
         <div className="second-row-child-container">
           <div className="svg-container">
             <img
-              src={FieldDockBodySVG}
+              src={AgriScanBodySVG}
               className="body-svg"
               alt="agriscan body"
             />
