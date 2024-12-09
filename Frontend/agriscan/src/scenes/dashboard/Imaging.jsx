@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import FieldDockImager from "../../components/Imaging/FieldDockImager";
+import AgriScanImager from "../../components/Imaging/AgriScanImager";
 import AnalyzedImages from "../../components/Imaging/AnalyzedImages";
 
 function Imaging() {
@@ -15,7 +15,7 @@ function Imaging() {
           className="choice-button"
           onClick={() => setSelectedOption("FieldDock")}
         >
-          FieldDock Imager
+          AgriScan Imager
         </button>
         <button
           className="choice-button"
@@ -32,7 +32,7 @@ function Imaging() {
           marginTop: "4rem",
         }}
       >
-        {selectedOption === "FieldDock" && <FieldDockImager />}
+        {selectedOption === "Agriscan" && <AgriScanImager />}
         {selectedOption === "Analyzed" && <AnalyzedImages />}
       </div>
     </>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import FieldDockLogo from "../../assets/svg/FieldDock-Logo.svg";
+import AgriScanLogo from "../../assets/svg/FieldDock-Logo.svg";
 import HomePageNotActive from "../../assets/svg/index_not_active.svg";
 import HomePageActive from "../../assets/svg/index_active.svg";
 import ImagingNotActive from "../../assets/svg/imaging_not_active.svg";
@@ -25,6 +25,50 @@ import DownloadActive from "../../assets/svg/download_active.svg";
 import { auth } from "../Login/auth/Firebase";
 
 function Navbar() {
+  const [dateTime, setDateTime] = useState("");
+  const [coordinates, setCoordinates] = useState("");
+
+  useEffect(() => {
+    // Function to fetch the current date and time
+    const fetchDateTime = () => {
+      const now = new Date();
+      const formattedDateTime = now.toLocaleString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZoneName: "short",
+      });
+      setDateTime(formattedDateTime);
+    };
+
+    // Function to get user coordinates using Geolocation API
+    const fetchCoordinates = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const { latitude, longitude } = position.coords;
+            const formattedCoordinates = `${latitude.toFixed(
+              4
+            )}°, ${longitude.toFixed(4)}°`;
+            setCoordinates(formattedCoordinates);
+          },
+          (error) => {
+            console.error("Error fetching coordinates:", error.message);
+            setCoordinates("Unable to fetch location");
+          }
+        );
+      } else {
+        setCoordinates("Geolocation not supported");
+      }
+    };
+
+    fetchDateTime();
+    fetchCoordinates();
+  }, []);
   const [userName, setUserName] = useState("User 0000 (----)");
 
   useEffect(() => {
@@ -100,16 +144,16 @@ function Navbar() {
           <div className="top-row">
             <div>
               <img
-                src={FieldDockLogo}
+                src={AgriScanLogo}
                 className="logo-svg"
-                alt="FieldDock Logo"
+                alt="AgriScan Logo"
               />
             </div>
           </div>
           <div style={{ width: "100%" }}> {/* This div is the gap */}</div>
           <div className="menu-bottom-row">
             <select className="fielddock-select-menu">
-              <option>Select FieldDock Menu...</option>
+              <option>Select AgriScan System...</option>
             </select>
           </div>
         </div>
@@ -125,11 +169,11 @@ function Navbar() {
           </div>
           <div className="device-info">
             <div className="device-reading">Last reading taken:</div>
-            <div className="device-date-time">
-              Friday | May 21, 2021 | 12:34pm CST
-            </div>
+            <div className="device-date-time">{dateTime || "Loading..."}</div>
             <div className="device-gps">GPS:</div>
-            <div className="device-coordinates">38°39'34.7"N 90°19'58.9"W</div>
+            <div className="device-coordinates">
+              {coordinates || "Loading..."}
+            </div>
           </div>
         </div>
 
