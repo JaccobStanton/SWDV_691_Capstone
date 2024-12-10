@@ -1,6 +1,11 @@
 import React from "react";
 
-function LightGrid() {
+function LightGrid({
+  solarRadiation,
+  lux,
+  lightningStrikes,
+  lightningDistance,
+}) {
   return (
     <>
       <div
@@ -12,7 +17,7 @@ function LightGrid() {
         }}
       >
         <span className="env-status-label">Solar Radiation</span>
-        <span className="env-status-value">00 W/m2</span>
+        <span className="env-status-value">{solarRadiation || "N/A"} W/m²</span>
       </div>
       <div
         style={{
@@ -23,7 +28,7 @@ function LightGrid() {
         }}
       >
         <span className="env-status-label">LUX</span>
-        <span className="env-status-value">000000</span>
+        <span className="env-status-value">{lux || "N/A"}</span>
       </div>
       <div
         style={{
@@ -33,8 +38,8 @@ function LightGrid() {
           alignItems: "center",
         }}
       >
-        <span className="env-status-label">Lightening Strikes</span>
-        <span className="env-status-value">0000</span>
+        <span className="env-status-label">Lightning Strikes</span>
+        <span className="env-status-value">{lightningStrikes || "N/A"}</span>
       </div>
       <div
         style={{
@@ -45,7 +50,9 @@ function LightGrid() {
         }}
       >
         <span className="env-status-label">Strike Distance</span>
-        <span className="env-status-value">0000</span>
+        <span className="env-status-value">
+          {lightningDistance || "N/A"} km
+        </span>
       </div>
     </>
   );

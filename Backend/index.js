@@ -1,5 +1,7 @@
 // Main server entry point
 require("dotenv").config();
+const cors = require("cors");
+
 const express = require("express");
 const mongoose = require("mongoose");
 const agriScanRoutes = require("./routes/agriScanRoutes");
@@ -9,11 +11,16 @@ const app = express();
 // Middleware
 app.use(express.json());
 
+app.use(cors()); // Allow all origins
+
+//!production
+// const corsOptions = {
+//   origin: ["http://yourfrontendurl.com"], // Replace with your frontend's production URL
+// };
+// app.use(cors(corsOptions));
+
 const username = process.env.DB_USERNAME;
 const password = process.env.DB_PASSWORD;
-
-console.log("Username:", username);
-console.log("Password:", password);
 
 const uri = `mongodb+srv://${username}:${password}@capstone.dhfn8.mongodb.net/?retryWrites=true&w=majority&appName=Capstone`;
 
@@ -24,7 +31,7 @@ mongoose
   .catch((err) => console.error("MongoDB Connection Error:", err));
 
 // Routes
-app.use("/api/agriscan", agriScanRoutes);
+app.use("/api", agriScanRoutes);
 
 // Start the server
 const PORT = process.env.PORT || 5001;

@@ -2,7 +2,48 @@
 // The seed folder holds one-time scripts for initializing the database.
 // Actual code script to seed database: 'node backend/seed/seedAgriScan.js'
 
-const AgriScanSystem = require("./models/AgriScanSystem");
+const mongoose = require("mongoose");
+const { v4: uuidv4 } = require("uuid");
+const AgriScanSystem = require("../models/AgriScanSystem");
+require("dotenv").config({ path: "../.env" });
+const express = require("express");
+
+const app = express();
+
+// Middleware
+app.use(express.json());
+
+const username = process.env.DB_USERNAME;
+const password = process.env.DB_PASSWORD;
+
+const uri = `mongodb+srv://${username}:${password}@capstone.dhfn8.mongodb.net/?retryWrites=true&w=majority&appName=Capstone`;
+// Connect to MongoDB
+
+// Connect to MongoDB
+mongoose
+  .connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log("Connected to MongoDB");
+
+    // Creating the main AgriScan System document
+    const agriScan = new AgriScanSystem({
+      systemName: "AgriScan System",
+      systems: [systemOneData, systemTwoData, systemThreeData, systemFourData],
+    });
+
+    return agriScan.save();
+  })
+  .then(() => {
+    console.log("AgriScan System document created successfully!");
+    mongoose.connection.close();
+  })
+  .catch((err) => {
+    console.error("Error connecting to MongoDB or creating document:", err);
+    mongoose.connection.close();
+  });
 
 // Helper function to generate mock sensor data for soil sensors
 const generateSoilSensorData = (sensorId) => {

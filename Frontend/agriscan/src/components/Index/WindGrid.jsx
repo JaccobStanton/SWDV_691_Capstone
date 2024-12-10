@@ -1,6 +1,6 @@
 import React from "react";
 
-function WindGrid() {
+function WindGrid({ windSpeed, windDirection, windGust, windChill }) {
   return (
     <>
       <div
@@ -12,7 +12,7 @@ function WindGrid() {
         }}
       >
         <span className="env-status-label">Wind Speed</span>
-        <span className="env-status-value">23mph</span>
+        <span className="env-status-value">{windSpeed || "N/A"} mph</span>
       </div>
       <div
         style={{
@@ -23,7 +23,7 @@ function WindGrid() {
         }}
       >
         <span className="env-status-label">Wind Direction</span>
-        <span className="env-status-value">NW</span>
+        <span className="env-status-value">{windDirection || "N/A"}</span>
       </div>
       <div
         style={{
@@ -34,7 +34,7 @@ function WindGrid() {
         }}
       >
         <span className="env-status-label">Wind Gust</span>
-        <span className="env-status-value">21mph</span>
+        <span className="env-status-value">{windGust || "N/A"} mph</span>
       </div>
       <div
         style={{
@@ -45,7 +45,7 @@ function WindGrid() {
         }}
       >
         <span className="env-status-label">Wind Chill</span>
-        <span className="env-status-value">22 &#8457;</span>
+        <span className="env-status-value">{windChill || "N/A"} &#8457;</span>
       </div>
     </>
   );

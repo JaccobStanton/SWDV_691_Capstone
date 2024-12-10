@@ -1,21 +1,20 @@
-// SensorDataTable.js
 import React from "react";
 
-//!REACT ANIMATE IN HERE
-const SoilSensorTable = () => {
+const SoilSensorTable = ({ selectedSensor }) => {
+  // If no sensor is selected or data is unavailable, show a fallback
+  if (!selectedSensor || !selectedSensor.data) {
+    return <div></div>;
+  }
+
   return (
-    <table
-      style={{
-        width: "100%",
-        textAlign: "center",
-      }}
-    >
+    <table className="soil-sensor-table">
       <thead>
         <tr>
           <th
+            className="th"
             style={{
               padding: "8px",
-              color: "rgba(0, 168, 177, 0.65)",
+              color: "#ccc",
               fontSize: "0.7rem",
             }}
           >
@@ -23,74 +22,46 @@ const SoilSensorTable = () => {
             <div>Depth</div>
           </th>
           <th
+            className="th"
             style={{
               padding: "8px",
-              color: "rgba(0, 168, 177, 0.65)",
+              color: "#ccc",
               fontSize: "0.7rem",
             }}
           >
             Soil Moisture
           </th>
           <th
+            className="th"
             style={{
               padding: "8px",
-              color: "rgba(0, 168, 177, 0.65)",
+              color: "#ccc",
               fontSize: "0.7rem",
             }}
           >
             Soil Temperature
           </th>
           <th
+            className="th"
             style={{
               padding: "8px",
-              color: "rgba(0, 168, 177, 0.65)",
+              color: "#ccc",
               fontSize: "0.7rem",
             }}
           >
-            Eletrical Conductivity
+            Electrical Conductivity
           </th>
         </tr>
       </thead>
       <tbody>
-        {/* Sample row - replicate or populate based on your data */}
-        <tr>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-        </tr>
-
-        <tr>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-        </tr>
-        <tr>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-        </tr>
-        {/* //!why is menu  above these, crunching when I add more entries? */}
-        {/* <tr>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-        </tr>
-        <tr>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-        </tr>
-        <tr>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-        </tr> */}
+        {selectedSensor.data.map((reading, index) => (
+          <tr key={index} className="table-row">
+            <td className="table-td">{reading.depth}</td>
+            <td className="table-td">{reading.soilMoisture}%</td>
+            <td className="table-td">{reading.soilTemperature}°C</td>
+            <td className="table-td">{reading.electricalConductivity} dS/m</td>
+          </tr>
+        ))}
       </tbody>
     </table>
   );
