@@ -1,6 +1,6 @@
 import React from "react";
 
-function AirGrid() {
+function AirGrid({ temperature, humidity, airPressure, vaporPressure }) {
   return (
     <>
       <div
@@ -12,7 +12,7 @@ function AirGrid() {
         }}
       >
         <span className="env-status-label">Temperature</span>
-        <span className="env-status-value">22 &#8457;</span>
+        <span className="env-status-value">{temperature || "N/A"} &#8457;</span>
       </div>
       <div
         style={{
@@ -23,7 +23,7 @@ function AirGrid() {
         }}
       >
         <span className="env-status-label">Humidity</span>
-        <span className="env-status-value">00.00%</span>
+        <span className="env-status-value">{humidity || "N/A"}%</span>
       </div>
       <div
         style={{
@@ -34,7 +34,7 @@ function AirGrid() {
         }}
       >
         <span className="env-status-label">Air Pressure</span>
-        <span className="env-status-value">0000 kPa</span>
+        <span className="env-status-value">{airPressure || "N/A"} kPa</span>
       </div>
       <div
         style={{
@@ -45,7 +45,7 @@ function AirGrid() {
         }}
       >
         <span className="env-status-label">Vapor Pressure</span>
-        <span className="env-status-value">00 kPa</span>
+        <span className="env-status-value">{vaporPressure || "N/A"} kPa</span>
       </div>
     </>
   );

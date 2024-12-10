@@ -1,38 +1,40 @@
-// SensorDataTable.js
 import React from "react";
 
-const MiscSensorTable = () => {
+const MiscSensorTable = ({ selectedSensor }) => {
+  // If no sensor is selected or data is unavailable, show a fallback
+  if (!selectedSensor || !selectedSensor.data) {
+    return <div></div>;
+  }
+
   return (
-    <table
-      style={{
-        width: "100%",
-        textAlign: "center",
-      }}
-    >
+    <table className="misc-sensor-table">
       <thead>
         <tr>
           <th
+            className="th"
             style={{
               padding: "8px",
-              color: "rgba(0, 168, 177, 0.65)",
+              color: "#ccc",
               fontSize: "0.7rem",
             }}
           >
             PAR
           </th>
           <th
+            className="th"
             style={{
               padding: "8px",
-              color: "rgba(0, 168, 177, 0.65)",
+              color: "#ccc",
               fontSize: "0.7rem",
             }}
           >
             PPFD
           </th>
           <th
+            className="th"
             style={{
               padding: "8px",
-              color: "rgba(0, 168, 177, 0.65)",
+              color: "#ccc",
               fontSize: "0.7rem",
             }}
           >
@@ -41,23 +43,13 @@ const MiscSensorTable = () => {
         </tr>
       </thead>
       <tbody>
-        {/* Sample row - replicate or populate based on your data */}
-        <tr>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-        </tr>
-
-        <tr>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-        </tr>
-        <tr>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-          <td className="table-td">-</td>
-        </tr>
+        {selectedSensor.data.map((reading, index) => (
+          <tr key={index} className="table-row">
+            <td className="table-td">{reading.PAR} µmol/m²/s</td>
+            <td className="table-td">{reading.PPFD} µmol/m²/s</td>
+            <td className="table-td">{reading.DLI} mol/m²/day</td>
+          </tr>
+        ))}
       </tbody>
     </table>
   );

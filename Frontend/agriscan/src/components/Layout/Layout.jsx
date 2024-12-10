@@ -18,7 +18,7 @@ const Layout = ({ children }) => {
           width: "92%",
           borderRadius: "8px",
           border: "1px solid #012a44",
-          height: "110vh",
+          height: "125vh",
           backgroundColor: "rgba(0, 0, 0, 0)",
           backgroundImage: `
             radial-gradient(

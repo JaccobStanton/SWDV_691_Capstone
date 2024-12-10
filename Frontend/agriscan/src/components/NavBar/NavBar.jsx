@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AgriScanLogo from "../../assets/svg/FieldDock-Logo.svg";
 import HomePageNotActive from "../../assets/svg/index_not_active.svg";
@@ -23,52 +23,11 @@ import DownloadNotActive from "../../assets/svg/download_not_active.svg";
 import DownloadActive from "../../assets/svg/download_active.svg";
 
 import { auth } from "../Login/auth/Firebase";
+import { getSystems } from "../../api/api";
+import { AppContext } from "../../context/AppContext";
 
 function Navbar() {
-  const [dateTime, setDateTime] = useState("");
-  const [coordinates, setCoordinates] = useState("");
-
-  useEffect(() => {
-    // Function to fetch the current date and time
-    const fetchDateTime = () => {
-      const now = new Date();
-      const formattedDateTime = now.toLocaleString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-        timeZoneName: "short",
-      });
-      setDateTime(formattedDateTime);
-    };
-
-    // Function to get user coordinates using Geolocation API
-    const fetchCoordinates = () => {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const { latitude, longitude } = position.coords;
-            const formattedCoordinates = `${latitude.toFixed(
-              4
-            )}°, ${longitude.toFixed(4)}°`;
-            setCoordinates(formattedCoordinates);
-          },
-          (error) => {
-            console.error("Error fetching coordinates:", error.message);
-            setCoordinates("Unable to fetch location");
-          }
-        );
-      } else {
-        setCoordinates("Geolocation not supported");
-      }
-    };
-
-    fetchDateTime();
-    fetchCoordinates();
-  }, []);
+  const { systems, selectedSystem, setSelectedSystem } = useContext(AppContext);
   const [userName, setUserName] = useState("User 0000 (----)");
 
   useEffect(() => {
@@ -84,6 +43,18 @@ function Navbar() {
 
     return () => unsubscribe(); // Cleanup the listener on component unmount
   }, []);
+
+  useEffect(() => {
+    getSystems()
+      .then((data) => setSystems(data))
+      .catch((err) => console.error("Error fetching systems:", err));
+  }, []);
+
+  const handleSelectChange = (event) => {
+    const selectedId = event.target.value;
+    const selected = systems.find((system) => system.id === selectedId);
+    setSelectedSystem(selected); // Update the selected system
+  };
 
   const navigate = useNavigate();
 
@@ -152,8 +123,16 @@ function Navbar() {
           </div>
           <div style={{ width: "100%" }}> {/* This div is the gap */}</div>
           <div className="menu-bottom-row">
-            <select className="fielddock-select-menu">
-              <option>Select AgriScan System...</option>
+            <select
+              className="fielddock-select-menu"
+              value={selectedSystem?.id || ""}
+              onChange={handleSelectChange}
+            >
+              {systems.map((system) => (
+                <option key={system.id} value={system.id}>
+                  {system.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
@@ -169,10 +148,12 @@ function Navbar() {
           </div>
           <div className="device-info">
             <div className="device-reading">Last reading taken:</div>
-            <div className="device-date-time">{dateTime || "Loading..."}</div>
+            <div className="device-date-time">
+              {selectedSystem?.systemStatus?.lastReading || "Loading..."}
+            </div>
             <div className="device-gps">GPS:</div>
             <div className="device-coordinates">
-              {coordinates || "Loading..."}
+              {selectedSystem?.systemStatus?.latLong || "Loading..."}
             </div>
           </div>
         </div>
