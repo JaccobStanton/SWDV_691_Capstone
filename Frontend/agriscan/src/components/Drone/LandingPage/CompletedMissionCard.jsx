@@ -15,7 +15,11 @@ const CompletedMissionsCard = ({ missions }) => {
   const [checkedState, setCheckedState] = useState({}); // State to keep track of checked cards
 
   const handleCheck = (id) => {
-    setCheckedState((prevState) => ({ ...prevState, [id]: !prevState[id] }));
+    console.log("Toggling checkbox for mission ID:", id); // Debugging log
+    setCheckedState((prevState) => ({
+      ...prevState,
+      [id]: !prevState[id], // Toggle the state for the specific mission ID
+    }));
   };
 
   // Function to determine button label and color
@@ -26,8 +30,13 @@ const CompletedMissionsCard = ({ missions }) => {
   return (
     <>
       {missions.map((mission, index) => {
-        const isChecked = checkedState[mission.id] || false;
+        const isChecked = checkedState[mission.id] || false; // Default to false if not yet in state
+        console.log(
+          `Mission ID: ${mission.id}, Checked State: ${isChecked}` // Debugging log
+        );
+
         const { label, color } = getButtonLabelAndColor(index);
+
         return (
           <Card
             key={mission.id}
@@ -54,7 +63,7 @@ const CompletedMissionsCard = ({ missions }) => {
             }}
           >
             <Checkbox
-              checked={isChecked} // Set the checked attribute
+              checked={isChecked} // Bind to the current mission's checked state
               onChange={() => handleCheck(mission.id)}
               sx={{
                 position: "absolute",
@@ -100,7 +109,7 @@ const CompletedMissionsCard = ({ missions }) => {
                 fontSize: "0.9rem",
               }}
             >
-              FieldDock Mission: {index + 1}
+              AgriScan Mission: {index + 1}
             </Typography>
             <CardContent
               sx={{

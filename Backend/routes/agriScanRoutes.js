@@ -311,10 +311,15 @@ router.post("/systems/:systemId/drones", async (req, res) => {
 });
 
 // PUT/PATCH /api/systems/:systemId/drones/:droneId
+// PATCH /api/systems/:systemId/drones/:droneId
 router.patch("/systems/:systemId/drones/:droneId", async (req, res) => {
   const { systemId, droneId } = req.params;
   const updates = req.body;
+
   try {
+    console.log("Updating drone with ID:", droneId);
+    console.log("Updates:", updates);
+
     const mainDoc = await getMainDoc();
     const systemIndex = mainDoc.systems.findIndex((s) => s.id === systemId);
     if (systemIndex === -1)
@@ -329,8 +334,14 @@ router.patch("/systems/:systemId/drones/:droneId", async (req, res) => {
     Object.assign(mainDoc.systems[systemIndex].drones[droneIndex], updates);
     await mainDoc.save();
 
+    console.log(
+      "Updated drone:",
+      mainDoc.systems[systemIndex].drones[droneIndex]
+    );
+
     res.json(mainDoc.systems[systemIndex].drones[droneIndex]);
   } catch (err) {
+    console.error("Error updating drone:", err);
     res.status(500).json({ error: err.message });
   }
 });

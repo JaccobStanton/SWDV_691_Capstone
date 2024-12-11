@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "../../css/drone.css";
 import DroneNetwork from "../../components/Drone/LandingPage/DroneNetwork";
 import DroneLogs from "../../components/Drone/LandingPage/DroneLogs";
@@ -6,11 +6,48 @@ import PlannedMissionsParent from "../../components/Drone/LandingPage/PlannedMis
 import CompletedMissionsParent from "../../components/Drone/LandingPage/CompletedMissionsParent";
 import DroneFieldDock from "../../assets/svg/Drone_FieldDock.svg";
 import RenameDrone from "../../components/Drone/LandingPage/RenameDrone";
-
 import DroneStatus from "../../components/Drone/LandingPage/DroneStatus";
-// import MapCoordinatesParent from "../../components/Drone/Missions/MissionPlanning/MapCoordinatesParent";
+
+// Import AppContext
+import { AppContext } from "../../context/AppContext";
 
 function Drone() {
+  // Access context values
+  const { selectedSystem, setSelectedSystem } = useContext(AppContext);
+  const [selectedDrone, setSelectedDrone] = useState(null);
+
+  const drones = selectedSystem?.drones || [];
+  const missionStatus =
+    selectedSystem?.systemStatus?.missionStatus || "Unknown";
+  const connectedDronesCount = drones.length;
+
+  // Automatically set the first drone as the selected drone when drones change
+  useEffect(() => {
+    if (drones.length > 0 && !selectedDrone) {
+      setSelectedDrone(drones[0]); // Select the first drone by default
+    }
+  }, [drones, selectedDrone]);
+
+  const handleDropdownChange = (event) => {
+    const selectedDroneId = event.target.value;
+
+    // Update the selected drone
+    const drone = drones.find((d) => d.id === selectedDroneId);
+    setSelectedDrone(drone);
+  };
+
+  // Function to handle renaming a drone
+  const handleRenameDrone = (droneId, newName) => {
+    const updatedDrones = selectedSystem?.drones.map((drone) =>
+      drone.id === droneId ? { ...drone, name: newName } : drone
+    );
+
+    setSelectedSystem({
+      ...selectedSystem,
+      drones: updatedDrones,
+    });
+  };
+
   return (
     <>
       <div className="page-title-box">
@@ -18,14 +55,25 @@ function Drone() {
       </div>
       <div className="row-column-grid">
         {/* First row of items */}
-        <DroneNetwork />
+        <DroneNetwork
+          missionStatus={missionStatus}
+          connectedDronesCount={connectedDronesCount}
+        />
         <div className="row-menu-parent">
-          <select className="menu-fill">
-            <option value="">Select a drone...</option>
-            <option value="">Option 2</option>
-            <option value="">Option 3</option>
-            {/* Add more options as needed */}
-          </select>
+          {/* Drone Selection Dropdown */}
+          {selectedSystem && (
+            <select
+              className="menu-fill"
+              onChange={handleDropdownChange} // Integrated handler
+              value={selectedDrone?.id || ""} // Pre-select the first drone
+            >
+              {drones.map((drone) => (
+                <option key={drone.id} value={drone.id}>
+                  {drone.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
         <DroneLogs />
 
@@ -35,17 +83,22 @@ function Drone() {
         </div>
         <div>
           <div className="top">
-            <DroneStatus />
+            <DroneStatus
+              batteryPercentage={selectedDrone?.batteryPercentage || "N/A"}
+              signal={selectedDrone?.signal || "N/A"}
+            />
           </div>
-
           <div className="middle">
-            <img className="page-img" src={DroneFieldDock} />
+            <img className="page-img" src={DroneFieldDock} alt="Field Dock" />
           </div>
-          <div class="bottom">
-            <RenameDrone />
+          <div className="bottom">
+            <RenameDrone
+              selectedDrone={selectedDrone}
+              selectedSystem={selectedSystem} // Add this line
+              onRenameDrone={handleRenameDrone}
+            />
           </div>
         </div>
-
         <div>
           <PlannedMissionsParent />
         </div>

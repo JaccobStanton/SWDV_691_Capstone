@@ -1,6 +1,7 @@
 // src/api/api.js
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:5001/api";
+import axios from "axios";
 
 // Fetch all systems
 export async function getSystems() {
@@ -54,6 +55,19 @@ export async function getNotAnalyzedImages() {
     return await response.json();
   } catch (error) {
     console.error("Error fetching Not Analyzed images:", error);
+    throw error;
+  }
+}
+
+export async function updateDrone(systemId, droneId, updates) {
+  try {
+    const response = await axios.patch(
+      `/api/systems/${systemId}/drones/${droneId}`,
+      updates
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Failed to update drone:", error);
     throw error;
   }
 }
