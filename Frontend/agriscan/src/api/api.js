@@ -30,3 +30,30 @@ export async function getSensors() {
     throw error;
   }
 }
+
+// Fetch all images
+export async function getImages() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/images`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch images: ${response.statusText}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching images:", error);
+    throw error;
+  }
+}
+
+export async function getNotAnalyzedImages() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/images/not-analyzed`);
+    if (!response.ok) {
+      throw new Error("Failed to fetch Not Analyzed images");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching Not Analyzed images:", error);
+    throw error;
+  }
+}

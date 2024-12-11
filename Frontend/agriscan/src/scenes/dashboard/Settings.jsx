@@ -53,7 +53,7 @@ function Settings() {
                   />
                 }
                 label="
-                  FieldDock v0.5.0 is ready to be installed tonight"
+                  AgriScan v0.5.0 is ready to be installed"
                 sx={{
                   "& .MuiFormControlLabel-label": {
                     fontSize: "0.87rem",
