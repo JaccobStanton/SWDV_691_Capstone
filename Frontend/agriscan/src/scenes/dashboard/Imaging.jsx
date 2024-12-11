@@ -13,7 +13,7 @@ function Imaging() {
         {/* Add onClick handlers to set the selected option */}
         <button
           className="choice-button"
-          onClick={() => setSelectedOption("FieldDock")}
+          onClick={() => setSelectedOption("Agriscan")}
         >
           AgriScan Imager
         </button>
