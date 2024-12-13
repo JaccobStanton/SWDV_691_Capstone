@@ -17,6 +17,20 @@ export async function getSystems() {
   }
 }
 
+//update system name
+export const updateSystem = async (systemId, updates) => {
+  try {
+    const response = await axios.patch(
+      `${API_BASE_URL}/systems/${systemId}`,
+      updates
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating system:", error.response?.data || error);
+    throw error;
+  }
+};
+
 // NEW: Fetch sensors for a given system
 
 export async function getSensors() {

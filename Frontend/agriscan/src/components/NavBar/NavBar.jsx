@@ -29,19 +29,18 @@ import { AppContext } from "../../context/AppContext";
 function Navbar() {
   const { systems, selectedSystem, setSelectedSystem } = useContext(AppContext);
   const [userName, setUserName] = useState("User 0000 (----)");
+  const [activeButton, setActiveButton] = useState(""); // State to track the active button
 
   useEffect(() => {
-    // Listen for the authenticated user
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        // Set the display name or email
         setUserName(user.displayName || user.email || "Unnamed User");
       } else {
         setUserName("User 0000 (----)");
       }
     });
 
-    return () => unsubscribe(); // Cleanup the listener on component unmount
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -53,47 +52,14 @@ function Navbar() {
   const handleSelectChange = (event) => {
     const selectedId = event.target.value;
     const selected = systems.find((system) => system.id === selectedId);
-    setSelectedSystem(selected); // Update the selected system
+    setSelectedSystem(selected);
   };
 
   const navigate = useNavigate();
 
-  const navToHomePage = () => {
-    navigate("/Home-Page");
-  };
-  const navToImaging = () => {
-    navigate("/Imaging");
-  };
-  const navToDrone = () => {
-    navigate("/Drone");
-  };
-  const navToSensors = () => {
-    navigate("/Sensors");
-  };
-  const navToSettings = () => {
-    navigate("/Settings");
-  };
-
-  const navToSensorSettings = () => {
-    navigate("/Realtime-Settings");
-  };
-  const navToImagingSettings = () => {
-    navigate("/Imaging-Settings");
-  };
-
-  const navToDiagnostics = () => {
-    navigate("/Diagnostics");
-  };
-  const navToUsers = () => {
-    navigate("/Users");
-  };
-  const navToDownload = () => {
-    navigate("/Download");
-  };
-
-  const handleLogout = () => {
-    auth.signOut();
-    navigate("/");
+  const handleNavClick = (buttonName, navigationFn) => {
+    setActiveButton(buttonName); // Set the active button
+    navigationFn();
   };
 
   //---------------------------hovering over 10 boxes START------------------------------------
@@ -108,6 +74,7 @@ function Navbar() {
   const [isHovered9, setIsHovered9] = useState(false);
   const [isHovered10, setIsHovered10] = useState(false);
   //---------------------------hovering over 10 boxes END------------------------------------
+
   return (
     <>
       <div className="navbar-grid">
@@ -141,7 +108,10 @@ function Navbar() {
           <div className="row">
             <div className="user-action-container">
               <div className="active-user-name">{userName}</div>
-              <button onClick={handleLogout} className="log-out-button">
+              <button
+                onClick={() => handleNavClick("logout", () => auth.signOut())}
+                className="log-out-button"
+              >
                 Log Out
               </button>
             </div>
@@ -163,11 +133,16 @@ function Navbar() {
             <div className="screen-toggle-buttons-container-top">
               <div
                 className={
-                  isHovered1 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "home"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("home", () => navigate("/Home-Page"))
+                }
+                title="Home"
                 onMouseEnter={() => setIsHovered1(true)}
                 onMouseLeave={() => setIsHovered1(false)}
-                onClick={navToHomePage}
               >
                 <img
                   className="toggle-button-icon"
@@ -176,11 +151,16 @@ function Navbar() {
               </div>
               <div
                 className={
-                  isHovered2 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "imaging"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("imaging", () => navigate("/Imaging"))
+                }
+                title="Imager"
                 onMouseEnter={() => setIsHovered2(true)}
                 onMouseLeave={() => setIsHovered2(false)}
-                onClick={navToImaging}
               >
                 <img
                   className="toggle-button-icon"
@@ -189,11 +169,16 @@ function Navbar() {
               </div>
               <div
                 className={
-                  isHovered3 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "drone"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("drone", () => navigate("/Drone"))
+                }
+                title="Drone Dashboard"
                 onMouseEnter={() => setIsHovered3(true)}
                 onMouseLeave={() => setIsHovered3(false)}
-                onClick={navToDrone}
               >
                 <img
                   className="toggle-button-icon"
@@ -202,24 +187,34 @@ function Navbar() {
               </div>
               <div
                 className={
-                  isHovered4 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "sensors"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("sensors", () => navigate("/Sensors"))
+                }
+                title="Wireless Sensors"
                 onMouseEnter={() => setIsHovered4(true)}
                 onMouseLeave={() => setIsHovered4(false)}
-                onClick={navToSensors}
               >
                 <img
-                  className="" //no classname for some reason
+                  className="" // No classname for some reason
                   src={isHovered4 ? SensorsActive : SensorsNotActive}
                 />
               </div>
               <div
                 className={
-                  isHovered5 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "settings"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("settings", () => navigate("/Settings"))
+                }
+                title="Settings"
                 onMouseEnter={() => setIsHovered5(true)}
                 onMouseLeave={() => setIsHovered5(false)}
-                onClick={navToSettings}
               >
                 <img
                   className="toggle-button-icon"
@@ -233,11 +228,18 @@ function Navbar() {
             <div className="screen-toggle-buttons-container-bottom">
               <div
                 className={
-                  isHovered6 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "sensorSettings"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("sensorSettings", () =>
+                    navigate("/Realtime-Settings")
+                  )
+                }
+                title="Sensor Settings"
                 onMouseEnter={() => setIsHovered6(true)}
                 onMouseLeave={() => setIsHovered6(false)}
-                onClick={navToSensorSettings}
               >
                 <img
                   className="toggle-button-icon"
@@ -248,11 +250,18 @@ function Navbar() {
               </div>
               <div
                 className={
-                  isHovered7 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "imagingSettings"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("imagingSettings", () =>
+                    navigate("/Imaging-Settings")
+                  )
+                }
+                title="Imager Settings"
                 onMouseEnter={() => setIsHovered7(true)}
                 onMouseLeave={() => setIsHovered7(false)}
-                onClick={navToImagingSettings}
               >
                 <img
                   className="toggle-button-icon"
@@ -265,11 +274,16 @@ function Navbar() {
               </div>
               <div
                 className={
-                  isHovered8 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "diagnostics"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("diagnostics", () => navigate("/Diagnostics"))
+                }
+                title="Diagnostics"
                 onMouseEnter={() => setIsHovered8(true)}
                 onMouseLeave={() => setIsHovered8(false)}
-                onClick={navToDiagnostics}
               >
                 <img
                   className="toggle-button-icon"
@@ -278,11 +292,16 @@ function Navbar() {
               </div>
               <div
                 className={
-                  isHovered9 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "users"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("users", () => navigate("/Users"))
+                }
+                title="Users"
                 onMouseEnter={() => setIsHovered9(true)}
                 onMouseLeave={() => setIsHovered9(false)}
-                onClick={navToUsers}
               >
                 <img
                   className="toggle-button-icon"
@@ -292,11 +311,16 @@ function Navbar() {
 
               <div
                 className={
-                  isHovered10 ? "toggle-button-hovered" : "toggle-button"
+                  activeButton === "download"
+                    ? "toggle-button-hovered"
+                    : "toggle-button"
                 }
+                onClick={() =>
+                  handleNavClick("download", () => navigate("/Download"))
+                }
+                title="Download data"
                 onMouseEnter={() => setIsHovered10(true)}
                 onMouseLeave={() => setIsHovered10(false)}
-                onClick={navToDownload}
               >
                 <img
                   className="toggle-button-icon"
@@ -310,4 +334,5 @@ function Navbar() {
     </>
   );
 }
+
 export default Navbar;

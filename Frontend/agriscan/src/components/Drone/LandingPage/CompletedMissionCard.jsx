@@ -20,6 +20,7 @@ const CompletedMissionsCard = ({ missions }) => {
       ...prevState,
       [id]: !prevState[id], // Toggle the state for the specific mission ID
     }));
+    console.log("Updated Checked State:", checkedState); // Debugging log
   };
 
   // Function to determine button label and color
@@ -30,6 +31,7 @@ const CompletedMissionsCard = ({ missions }) => {
   return (
     <>
       {missions.map((mission, index) => {
+        console.log("Rendering mission:", mission); // Debugging log
         const isChecked = checkedState[mission.id] || false; // Default to false if not yet in state
         console.log(
           `Mission ID: ${mission.id}, Checked State: ${isChecked}` // Debugging log

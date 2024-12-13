@@ -41,6 +41,20 @@ export function AppProvider({ children }) {
     }
   }, [setSensors]);
 
+  // Add a function to update the system name
+  const updateSystemName = (systemId, newName) => {
+    setSystems((prevSystems) =>
+      prevSystems.map((system) =>
+        system.id === systemId ? { ...system, name: newName } : system
+      )
+    );
+    setSelectedSystem((prevSelected) =>
+      prevSelected?.id === systemId
+        ? { ...prevSelected, name: newName }
+        : prevSelected
+    );
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -52,6 +66,7 @@ export function AppProvider({ children }) {
         selectedSensor,
         setSelectedSensor,
         fetchSensors,
+        updateSystemName, // Provide the function in the context
       }}
     >
       {children}

@@ -1,10 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faTrashCan,
-  faFileArrowDown,
-  faMagnifyingGlass,
-} from "@fortawesome/free-solid-svg-icons";
+import { faTrashCan, faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
 import {
   Checkbox,
   Table,
@@ -220,7 +216,7 @@ function LogsTable() {
                 color: "rgba(0, 168, 177, 0.85)",
               }}
             >
-              FieldDockID
+              SystemID
             </TableCell>
             <TableCell
               sx={{
@@ -285,10 +281,6 @@ function LogsTable() {
                   {row.type}
                 </TableCell>
                 <TableCell>
-                  <FontAwesomeIcon
-                    icon={faMagnifyingGlass}
-                    className="first-icon"
-                  />
                   <FontAwesomeIcon
                     icon={faFileArrowDown}
                     className="second-icon"

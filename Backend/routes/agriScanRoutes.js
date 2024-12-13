@@ -113,23 +113,27 @@ router.post("/systems", async (req, res) => {
   }
 });
 
-// PUT/PATCH /api/systems/:systemId - update a specific system
+// PATCH /api/systems/:systemId - Update a specific system
 router.patch("/systems/:systemId", async (req, res) => {
-  const { systemId } = req.params;
-  const updates = req.body;
+  const { systemId } = req.params; // Extract systemId from the URL
+  const updates = req.body; // Get the updates from the request body
+
   try {
-    // Directly update using array filters
-    const result = await AgriScanSystem.findOneAndUpdate(
-      { "systems.id": systemId },
-      { $set: { "systems.$": { ...updates, id: systemId } } },
-      { new: true }
+    // Locate the specific system by its id and update its name
+    const result = await AgriScanSystem.updateOne(
+      { "systems.id": systemId }, // Match the specific system in the nested array
+      { $set: { "systems.$.name": updates.name } } // Update the name of the matched system
     );
 
-    if (!result) return res.status(404).json({ error: "System not found" });
-    const updatedSystem = result.systems.find((sys) => sys.id === systemId);
-    res.json(updatedSystem);
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: "System not found" });
+    }
+
+    // Return a success response
+    res.status(200).json({ message: "System updated successfully" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error updating system:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

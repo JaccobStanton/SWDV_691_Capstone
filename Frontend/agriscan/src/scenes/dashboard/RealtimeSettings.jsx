@@ -1,6 +1,8 @@
 import React from "react";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "../../css/realtime-settings.css";
 
 function RealtimeSettings() {
@@ -9,12 +11,26 @@ function RealtimeSettings() {
     second: false,
   });
 
-  // Handle change for checkboxes
   const handleChange = (event) => {
     setChecked({
       ...checked,
       [event.target.name]: event.target.checked,
     });
+  };
+
+  const handleSavePreferences = () => {
+    toast.error(
+      "You do not have admin privileges to make changes to your sensor settings. Contact an admin.",
+      {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      }
+    );
   };
 
   const checkboxStyles = {
@@ -23,9 +39,10 @@ function RealtimeSettings() {
       color: "#48f7f5", // Color when checked
     },
   };
+
   return (
     <>
-      {/* Full-width box above the grid */}
+      <ToastContainer />
       <div className="page-title-box">
         <h3>Sensor Measurement Settings</h3>
       </div>
@@ -128,7 +145,7 @@ function RealtimeSettings() {
                 />
               }
               label="
-              Apply the above imaging settings to all FieldDock systems in this group"
+              Apply the above imaging settings to all AgriScan systems in this group"
               sx={{
                 "& .MuiFormControlLabel-label": {
                   fontSize: "0.87rem",
@@ -145,7 +162,7 @@ function RealtimeSettings() {
                   name="second"
                 />
               }
-              label="Apply the above imaging settings to all FieldDock systems in this account"
+              label="Apply the above imaging settings to all AgriScan systems in this account"
               sx={{
                 "& .MuiFormControlLabel-label": {
                   fontSize: "0.87rem",
@@ -154,7 +171,9 @@ function RealtimeSettings() {
               }}
             />
           </div>
-          <button className="save-button">Save all imaging preferences</button>
+          <button className="save-button" onClick={handleSavePreferences}>
+            Save all imaging preferences
+          </button>
         </div>
       </div>
     </>

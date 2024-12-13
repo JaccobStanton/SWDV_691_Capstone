@@ -2,6 +2,8 @@ import React from "react";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import "../../css/imager-settings.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function ImagingSettings() {
   const options = ["Option 1", "Option 2", "Option 3"];
@@ -18,14 +20,31 @@ function ImagingSettings() {
     });
   };
 
+  const handleSavePreferences = () => {
+    toast.error(
+      "You do not have admin privileges to make changes to your imaging settings. Contact an admin.",
+      {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      }
+    );
+  };
+
   const checkboxStyles = {
     color: "rgba(0, 168, 177, 0.65); !important",
     "&.Mui-checked": {
       color: "#48f7f5 !important",
     },
   };
+
   return (
     <>
+      <ToastContainer />
       <div className="page-title-box">
         <h3>Imager Settings</h3>
       </div>
@@ -53,7 +72,7 @@ function ImagingSettings() {
                     />
                   }
                   label="
-                  Apply the above imaging settings to all FieldDock systems in this group"
+                  Apply the above imaging settings to all AgriScan systems in this group"
                   sx={{
                     "& .MuiFormControlLabel-label": {
                       fontSize: "0.87rem",
@@ -78,7 +97,7 @@ function ImagingSettings() {
                     />
                   }
                   label="
-                  Apply the above imaging settings to all FieldDock systems in this group"
+                  Apply the above imaging settings to all AgriScan systems in this group"
                   sx={{
                     "& .MuiFormControlLabel-label": {
                       fontSize: "0.87rem",
@@ -91,12 +110,12 @@ function ImagingSettings() {
           </div>
         </div>
 
-        {/* //?Second row  */}
+        {/* Second row */}
         <div className="grid-row">
           <div className="image-frequency-box">
             <div className="title-box">Imaging Frequency</div>
             <div className="two-column-container">
-              {/* //? first column */}
+              {/* First column */}
               <div className="column">
                 <div className="checkbox-top-centered">
                   <FormControlLabel
@@ -109,7 +128,7 @@ function ImagingSettings() {
                       />
                     }
                     label="
-                  Limited Imaging (FielDock on solar power)"
+                  Limited Imaging (AgriScan on solar power)"
                     sx={{
                       "& .MuiFormControlLabel-label": {
                         fontSize: "0.87rem",
@@ -153,7 +172,7 @@ function ImagingSettings() {
                   </div>
                 </div>
               </div>
-              {/* //? second column */}
+              {/* Second column */}
               <div className="column">
                 <div className="checkbox-top-centered">
                   <FormControlLabel
@@ -166,7 +185,7 @@ function ImagingSettings() {
                       />
                     }
                     label="
-                  Continuous Imaging (FieldDock plugged in)"
+                  Continuous Imaging (AgriScan plugged in)"
                     sx={{
                       "& .MuiFormControlLabel-label": {
                         fontSize: "0.87rem",
@@ -231,7 +250,7 @@ function ImagingSettings() {
                   />
                 }
                 label="
-                  Apply the above imaging settings to all FieldDock systems in this group"
+                  Apply the above imaging settings to all AgriScan systems in this group"
                 sx={{
                   "& .MuiFormControlLabel-label": {
                     fontSize: "0.87rem",
@@ -248,7 +267,7 @@ function ImagingSettings() {
                     name="second"
                   />
                 }
-                label="Apply the above imaging settings to all FieldDock systems in this account"
+                label="Apply the above imaging settings to all AgriScan systems in this account"
                 sx={{
                   "& .MuiFormControlLabel-label": {
                     fontSize: "0.87rem",
@@ -257,15 +276,14 @@ function ImagingSettings() {
                 }}
               />
             </div>
-            <button className="save-button">
+            <button className="save-button" onClick={handleSavePreferences}>
               Save all imaging preferences
             </button>
           </div>
         </div>
-
-        {/* Full-width box within the grid */}
       </div>
     </>
   );
 }
+
 export default ImagingSettings;
