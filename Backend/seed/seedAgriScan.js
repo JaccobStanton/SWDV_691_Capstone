@@ -46,9 +46,10 @@ mongoose
   });
 
 // Helper function to generate mock sensor data for soil sensors
-const generateSoilSensorData = (sensorId) => {
+const generateSoilSensorData = (sensorId, sensorName) => {
   return {
     id: sensorId,
+    name: sensorName,
     type: "soilSensor",
     data: Array.from({ length: 18 }, (_, i) => {
       const depth = `${i * 2}-${i * 2 + 2} inches`;
@@ -60,6 +61,8 @@ const generateSoilSensorData = (sensorId) => {
         PAR: (300 + Math.random() * 700).toFixed(2), // Random PAR value between 300 and 1000 µmol/m²/s
         PPFD: (50 + Math.random() * 100).toFixed(2), // Random PPFD value between 50 and 150 µmol/m²/s
         DLI: (10 + Math.random() * 20).toFixed(2),
+        lora: Math.floor(Math.random() * 4) + 1, // Random value between 1 and 4
+        battery: `${Math.floor(Math.random() * 100) + 1}%`, // Random percentage between 1% and 100%
       };
     }),
   };
@@ -125,9 +128,8 @@ const systemOneData = {
     },
   ],
   sensors: [
-    generateSoilSensorData("soilSensor1", realSoilSensors[0]),
-    generateSoilSensorData("soilSensor2", realSoilSensors[1]),
-    generateSoilSensorData("soilSensor3", realSoilSensors[2]),
+    generateSoilSensorData("Decagon 5TE", realSoilSensors[0]),
+    generateSoilSensorData("AquaCheck", realSoilSensors[1]),
   ],
   systemStatus: {
     operational: true,
@@ -168,10 +170,12 @@ const systemTwoData = {
     { url: "system_two_image.jpg", description: "Soil sensor close-up." },
   ],
   sensors: [
-    generateSoilSensorData("soilSensor4", realSoilSensors[3]),
-    generateSoilSensorData("soilSensor5", realSoilSensors[4]),
-    generateSoilSensorData("soilSensor6", realSoilSensors[5]),
+    generateSoilSensorData("Sentek Drill & Drop", realSoilSensors[3]),
+    generateSoilSensorData("Teros-54", realSoilSensors[4]),
+    generateSoilSensorData("GroPoint Profile", realSoilSensors[5]),
+    generateSoilSensorData("HydraProbe II", realSoilSensors[2]),
   ],
+
   systemStatus: {
     operational: false,
     lastCheck: new Date(),
@@ -208,14 +212,11 @@ const systemThreeData = {
   id: uuidv4(),
   name: "System Three",
   images: [{ url: "system_three_image.jpg", description: "Weather station." }],
-  sensors: [
-    generateSoilSensorData("soilSensor7", realSoilSensors[6]),
-    generateSoilSensorData("soilSensor8", realSoilSensors[7]),
-    generateSoilSensorData("soilSensor9", realSoilSensors[8]),
-  ],
+  sensors: [generateSoilSensorData("Teros-12", realSoilSensors[6])],
   systemStatus: {
     operational: true,
     lastCheck: new Date(),
+    garageBattery: 5,
     notes: "Running at optimal performance.",
     droneStatus: "In flight",
     missionStatus: "In flight",
@@ -249,10 +250,13 @@ const systemFourData = {
   name: "System Four",
   images: [{ url: "system_four_image.jpg", description: "Irrigation system." }],
   sensors: [
-    generateSoilSensorData("soilSensor10", realSoilSensors[9]),
-    generateSoilSensorData("soilSensor11", realSoilSensors[10]),
-    generateSoilSensorData("soilSensor12", realSoilSensors[11]),
+    generateSoilSensorData("Delta-T ThetaProbe", realSoilSensors[7]),
+    generateSoilSensorData("ECHO EC-5", realSoilSensors[8]),
+    generateSoilSensorData("FieldScout TDR 300", realSoilSensors[9]),
+    generateSoilSensorData("Atmos 9000", realSoilSensors[10]),
+    generateSoilSensorData("Campbell CS655", realSoilSensors[11]),
   ],
+
   systemStatus: {
     operational: true,
     lastCheck: new Date(),

@@ -20,6 +20,8 @@ const SoilSensorDataSchema = new mongoose.Schema(
     PAR: { type: String, required: true },
     PPFD: { type: String, required: true },
     DLI: { type: String, required: true },
+    lora: { type: Number, required: true },
+    battery: { type: String, required: true },
   },
   { _id: false }
 );

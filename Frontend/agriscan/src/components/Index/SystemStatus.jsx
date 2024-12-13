@@ -30,7 +30,9 @@ function SystemStatus() {
             </div>
             <div className="status-item">
               <span className="status-label">Garage Battery:</span>
-              <span className="status-value">{garageBattery}%</span>
+              <span className="status-value">
+                {garageBattery ? `${garageBattery}%` : "5%"}
+              </span>
             </div>
           </div>
           <div className="status-column">

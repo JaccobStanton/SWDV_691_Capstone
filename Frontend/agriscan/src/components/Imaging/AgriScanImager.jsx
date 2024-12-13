@@ -14,10 +14,11 @@ import {
   TableHead,
   TableRow,
   Paper,
+  CircularProgress,
 } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import { getNotAnalyzedImages } from "../../api/api"; // Ensure correct import path
+import { getNotAnalyzedImages } from "../../api/api";
 
 const style = {
   position: "absolute",
@@ -35,32 +36,32 @@ function AgriScanImager() {
   const [selected, setSelected] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+  const [loading, setLoading] = useState(true); // Loading state
 
-  // Fetch data when the component is mounted
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getNotAnalyzedImages(); // Ensure `getImages` fetches from `/api/images/not-analyzed`
+        const data = await getNotAnalyzedImages();
 
-        // Directly map the returned array to match table rows
         const missionsData = data.map((item, index) => ({
-          id: index + 1, // Add a sequential ID for frontend display
-          imageName: item.name || "N/A", // Use fallback if `name` is missing
-          date: item.date || "N/A", // Use fallback if `date` is missing
-          time: item.time || "N/A", // Use fallback if `time` is missing
-          imageType: item.imgType || "N/A", // Use fallback if `imgType` is missing
-          imageData: item.url, // Base64 or URL to display
-          url: item.url, // Include raw URL if needed
+          id: index + 1,
+          imageName: item.name || "N/A",
+          date: item.date || "N/A",
+          time: item.time || "N/A",
+          imageType: item.imgType || "N/A",
+          imageData: item.url,
+          url: item.url,
         }));
         setMissions(missionsData);
       } catch (error) {
         console.error("Failed to fetch images", error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching data
       }
     };
 
     fetchData();
   }, []);
-  console.log("Missions data:", missions);
 
   const handleOpen = (imageData) => {
     setSelectedImage(imageData);
@@ -118,159 +119,175 @@ function AgriScanImager() {
           background: "#151617",
         }}
       >
-        <Table aria-label="images table" sx={{ backgroundColor: "#151617" }}>
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  indeterminate={
-                    selected.length > 0 && selected.length < missions.length
-                  }
-                  checked={
-                    missions.length > 0 && selected.length === missions.length
-                  }
-                  onChange={handleSelectAllClick}
-                />
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                  color: "rgba(0, 168, 177, 0.85)",
-                }}
-              >
-                ID
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                  color: "rgba(0, 168, 177, 0.85)",
-                }}
-              >
-                Image Name
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                  color: "rgba(0, 168, 177, 0.85)",
-                }}
-              >
-                Date
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                  color: "rgba(0, 168, 177, 0.85)",
-                }}
-              >
-                Time
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                  color: "rgba(0, 168, 177, 0.85)",
-                }}
-              >
-                Image Type
-              </TableCell>
-
-              <TableCell
-                sx={{
-                  fontWeight: "bold",
-                  fontSize: "1rem",
-                  color: "rgba(0, 168, 177, 0.85)",
-                }}
-              >
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <Modal
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
           >
-            <Box sx={style}>
-              {/* Display the selected image in a larger view */}
-              {selectedImage && (
-                <img
-                  src={`data:image/png;base64,${selectedImage}`}
-                  alt="Large view"
-                  style={{ maxWidth: "100%", height: "auto" }}
-                />
-              )}
-            </Box>
-          </Modal>
-          <TableBody>
-            {missions.map((mission) => {
-              const isItemSelected = isSelected(mission.id);
-              return (
-                <TableRow
-                  key={mission.id}
-                  hover
-                  selected={isItemSelected}
+            <CircularProgress style={{ color: "rgba(0, 168, 177, 0.85)" }} />
+            <p style={{ marginTop: "10px", color: "rgba(0, 168, 177, 0.85)" }}>
+              Loading images, please wait...
+            </p>
+          </div>
+        ) : (
+          <Table aria-label="images table" sx={{ backgroundColor: "#151617" }}>
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    indeterminate={
+                      selected.length > 0 && selected.length < missions.length
+                    }
+                    checked={
+                      missions.length > 0 && selected.length === missions.length
+                    }
+                    onChange={handleSelectAllClick}
+                  />
+                </TableCell>
+                <TableCell
                   sx={{
-                    "&:hover": { backgroundColor: "#474a4e" },
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
                   }}
                 >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={isItemSelected}
-                      onChange={(event) => handleClick(event, mission.id)}
-                    />
-                  </TableCell>
-                  <TableCell sx={{ color: "#ECECED" }}>{mission.id}</TableCell>
-                  <TableCell sx={{ color: "#ECECED" }}>
-                    {mission.imageName}
-                  </TableCell>
-                  <TableCell sx={{ color: "#ECECED" }}>
-                    {mission.date}
-                  </TableCell>
-                  <TableCell sx={{ color: "#ECECED" }}>
-                    {mission.time}
-                  </TableCell>
-                  <TableCell sx={{ color: "#ECECED" }}>
-                    {mission.imageType}
-                  </TableCell>
-                  {/* <TableCell sx={{ color: "#ECECED" }}>{mission.url}</TableCell> */}
-                  <TableCell>
-                    <FontAwesomeIcon
-                      icon={faMagnifyingGlass}
-                      onClick={() => handleOpen(mission.imageData)}
-                      style={{
-                        marginRight: "10px",
-                        cursor: "pointer",
-                        color: "#ECECED",
-                      }}
-                    />
-                    <a
-                      href={`data:image/png;base64,${mission.imageData}`}
-                      download={mission.imageName}
-                    >
+                  ID
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Image Name
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Date
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Time
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Image Type
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Actions
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <Modal
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                {selectedImage && (
+                  <img
+                    src={`data:image/png;base64,${selectedImage}`}
+                    alt="Large view"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+                )}
+              </Box>
+            </Modal>
+            <TableBody>
+              {missions.map((mission) => {
+                const isItemSelected = isSelected(mission.id);
+                return (
+                  <TableRow
+                    key={mission.id}
+                    hover
+                    selected={isItemSelected}
+                    sx={{
+                      "&:hover": { backgroundColor: "#474a4e" },
+                    }}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isItemSelected}
+                        onChange={(event) => handleClick(event, mission.id)}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.id}
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.imageName}
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.date}
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.time}
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.imageType}
+                    </TableCell>
+                    <TableCell>
                       <FontAwesomeIcon
-                        icon={faFileArrowDown}
+                        icon={faMagnifyingGlass}
+                        onClick={() => handleOpen(mission.imageData)}
                         style={{
                           marginRight: "10px",
                           cursor: "pointer",
                           color: "#ECECED",
                         }}
                       />
-                    </a>
-                    <FontAwesomeIcon
-                      icon={faTrashCan}
-                      style={{ cursor: "pointer", color: "#ECECED" }}
-                    />
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+                      <a
+                        href={`data:image/png;base64,${mission.imageData}`}
+                        download={mission.imageName}
+                      >
+                        <FontAwesomeIcon
+                          icon={faFileArrowDown}
+                          style={{
+                            marginRight: "10px",
+                            cursor: "pointer",
+                            color: "#ECECED",
+                          }}
+                        />
+                      </a>
+                      <FontAwesomeIcon
+                        icon={faTrashCan}
+                        style={{ cursor: "pointer", color: "#ECECED" }}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
       </TableContainer>
     </div>
   );
