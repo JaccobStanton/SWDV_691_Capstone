@@ -6,14 +6,18 @@ import axios from "axios";
 // Fetch all systems
 export async function getSystems() {
   try {
+    console.log("Sending request to:", `${API_BASE_URL}/systems`);
     const response = await fetch(`${API_BASE_URL}/systems`);
     if (!response.ok) {
+      console.error("Failed to fetch systems:", response.status);
       throw new Error("Failed to fetch systems");
     }
-    return await response.json(); // Return JSON response
+    const data = await response.json();
+    console.log("Systems received:", data);
+    return data;
   } catch (error) {
     console.error("Error fetching systems:", error);
-    throw error; // Re-throw to handle it in the component or context
+    throw error;
   }
 }
 

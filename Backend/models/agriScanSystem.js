@@ -105,4 +105,8 @@ const MainSystemSchema = new mongoose.Schema({
   systems: [SubSystemSchema],
 });
 
-module.exports = mongoose.model("AgriScanSystem", MainSystemSchema);
+module.exports = mongoose.model(
+  "AgriScanSystem",
+  MainSystemSchema,
+  "agriscansystems"
+);
