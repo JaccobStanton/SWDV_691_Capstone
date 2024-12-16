@@ -321,7 +321,7 @@ const CreateMissionDrawer = () => {
             <Item sx={{ background: "transparent" }}>
               <div
                 style={{
-                  height: "67vh",
+                  height: "71vh",
                   justifyContent: "center",
                   alignItems: "center",
                   border: "1px solid #797979",

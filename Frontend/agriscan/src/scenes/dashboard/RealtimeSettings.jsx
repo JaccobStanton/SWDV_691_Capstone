@@ -58,6 +58,11 @@ function RealtimeSettings() {
               </p>
               <select>
                 <option>Select time interval...</option>
+                <option>2 hours</option>
+                <option>4 hours</option>
+                <option>6 hours</option>
+                <option>8 hours</option>
+                <option>10 hours</option>
                 {/* Additional options here */}
               </select>
             </div>
@@ -70,7 +75,11 @@ function RealtimeSettings() {
               </p>
               <select>
                 <option>Select time interval...</option>
-                {/* Additional options here */}
+                <option>2 hours</option>
+                <option>4 hours</option>
+                <option>6 hours</option>
+                <option>8 hours</option>
+                <option>10 hours</option>
               </select>
             </div>
           </div>
@@ -86,7 +95,11 @@ function RealtimeSettings() {
               </p>
               <select>
                 <option>Select time interval...</option>
-                {/* Additional options here */}
+                <option>2 hours</option>
+                <option>4 hours</option>
+                <option>6 hours</option>
+                <option>8 hours</option>
+                <option>10 hours</option>
               </select>
             </div>
           </div>
@@ -98,7 +111,11 @@ function RealtimeSettings() {
               </p>
               <select>
                 <option>Select time interval...</option>
-                {/* Additional options here */}
+                <option>2 hours</option>
+                <option>4 hours</option>
+                <option>6 hours</option>
+                <option>8 hours</option>
+                <option>10 hours</option>
               </select>
             </div>
           </div>
@@ -114,7 +131,11 @@ function RealtimeSettings() {
               </p>
               <select>
                 <option>Select time interval...</option>
-                {/* Additional options here */}
+                <option>2 hours</option>
+                <option>4 hours</option>
+                <option>6 hours</option>
+                <option>8 hours</option>
+                <option>10 hours</option>
               </select>
             </div>
           </div>
@@ -126,7 +147,11 @@ function RealtimeSettings() {
               </p>
               <select>
                 <option>Select time interval...</option>
-                {/* Additional options here */}
+                <option>2 hours</option>
+                <option>4 hours</option>
+                <option>6 hours</option>
+                <option>8 hours</option>
+                <option>10 hours</option>
               </select>
             </div>
           </div>

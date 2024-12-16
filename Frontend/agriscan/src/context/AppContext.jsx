@@ -1,7 +1,6 @@
 // src/context/AppContext.js
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useCallback } from "react";
 import { getSystems, getSensors } from "../api/api";
-import React, { useCallback } from "react";
 
 export const AppContext = createContext(null);
 
@@ -28,7 +27,6 @@ export function AppProvider({ children }) {
         setLoading(false);
       }
     }
-
     fetchSystems();
   }, []);
 
@@ -41,18 +39,31 @@ export function AppProvider({ children }) {
     }
   }, [setSensors]);
 
-  // Add a function to update the system name
-  const updateSystemName = (systemId, newName) => {
-    setSystems((prevSystems) =>
-      prevSystems.map((system) =>
-        system.id === systemId ? { ...system, name: newName } : system
-      )
-    );
-    setSelectedSystem((prevSelected) =>
-      prevSelected?.id === systemId
-        ? { ...prevSelected, name: newName }
-        : prevSelected
-    );
+  const updateDroneName = (systemId, droneId, newName) => {
+    setSystems((prevSystems) => {
+      return prevSystems.map((system) => {
+        if (system.id === systemId) {
+          return {
+            ...system,
+            drones: system.drones.map((drone) =>
+              drone.id === droneId ? { ...drone, name: newName } : drone
+            ),
+          };
+        }
+        return system;
+      });
+    });
+
+    // Also update selectedSystem if it's the currently selected one
+    setSelectedSystem((prevSystem) => {
+      if (!prevSystem || prevSystem.id !== systemId) return prevSystem;
+      return {
+        ...prevSystem,
+        drones: prevSystem.drones.map((drone) =>
+          drone.id === droneId ? { ...drone, name: newName } : drone
+        ),
+      };
+    });
   };
 
   return (
@@ -66,7 +77,7 @@ export function AppProvider({ children }) {
         selectedSensor,
         setSelectedSensor,
         fetchSensors,
-        updateSystemName, // Provide the function in the context
+        updateDroneName,
       }}
     >
       {children}

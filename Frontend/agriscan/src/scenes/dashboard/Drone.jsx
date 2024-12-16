@@ -1,3 +1,4 @@
+// src/pages/Drone.jsx
 import React, { useContext, useState, useEffect } from "react";
 import "../../css/drone.css";
 import DroneNetwork from "../../components/Drone/LandingPage/DroneNetwork";
@@ -5,16 +6,18 @@ import DroneLogs from "../../components/Drone/LandingPage/DroneLogs";
 import PlannedMissionsParent from "../../components/Drone/LandingPage/PlannedMissionsParent";
 import CompletedMissionsParent from "../../components/Drone/LandingPage/CompletedMissionsParent";
 import DroneFieldDock from "../../assets/svg/Drone_FieldDock.svg";
-import RenameDrone from "../../components/Drone/LandingPage/RenameDrone";
 import DroneStatus from "../../components/Drone/LandingPage/DroneStatus";
 
-// Import AppContext
 import { AppContext } from "../../context/AppContext";
+import { updateDrone } from "../../api/api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Drone() {
-  // Access context values
-  const { selectedSystem, setSelectedSystem } = useContext(AppContext);
+  const { selectedSystem, setSelectedSystem, updateDroneName } =
+    useContext(AppContext);
   const [selectedDrone, setSelectedDrone] = useState(null);
+  const [newDroneName, setNewDroneName] = useState("");
 
   const drones = selectedSystem?.drones || [];
   const missionStatus =
@@ -36,16 +39,35 @@ function Drone() {
     setSelectedDrone(drone);
   };
 
-  // Function to handle renaming a drone
-  const handleRenameDrone = (droneId, newName) => {
-    const updatedDrones = selectedSystem?.drones.map((drone) =>
-      drone.id === droneId ? { ...drone, name: newName } : drone
-    );
-
-    setSelectedSystem({
-      ...selectedSystem,
-      drones: updatedDrones,
-    });
+  const handleRenameDrone = async () => {
+    if (!selectedDrone || !selectedSystem) return;
+    try {
+      await updateDrone(selectedSystem.id, selectedDrone.id, {
+        name: newDroneName,
+      });
+      updateDroneName(selectedSystem.id, selectedDrone.id, newDroneName);
+      toast.success("Drone renamed successfully!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
+      setNewDroneName("");
+    } catch (error) {
+      toast.error("Rename failed. Please try again.", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
+      console.error("Rename failed:", error);
+    }
   };
 
   return (
@@ -64,8 +86,8 @@ function Drone() {
           {selectedSystem && (
             <select
               className="menu-fill"
-              onChange={handleDropdownChange} // Integrated handler
-              value={selectedDrone?.id || ""} // Pre-select the first drone
+              onChange={handleDropdownChange}
+              value={selectedDrone?.id || ""}
             >
               {drones.map((drone) => (
                 <option key={drone.id} value={drone.id}>
@@ -92,17 +114,31 @@ function Drone() {
             <img className="page-img" src={DroneFieldDock} alt="Field Dock" />
           </div>
           <div className="bottom">
-            <RenameDrone
-              selectedDrone={selectedDrone}
-              selectedSystem={selectedSystem} // Add this line
-              onRenameDrone={handleRenameDrone}
-            />
+            <div className="bottom-centered-row-container">
+              <div className="title-box">Rename Drone</div>
+              <div className="bottom-inner-content">
+                <input
+                  type="text"
+                  placeholder="Enter Drone Name"
+                  className="input-group-input"
+                  value={newDroneName}
+                  onChange={(e) => setNewDroneName(e.target.value)}
+                />
+                <button
+                  className="rename-drone-button"
+                  onClick={handleRenameDrone}
+                >
+                  Rename
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div>
           <PlannedMissionsParent />
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 }

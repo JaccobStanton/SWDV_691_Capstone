@@ -34,8 +34,6 @@ import OverviewDrawer from "../Dashboard/Overview/OverviewDrawer";
 import CreateMissionDrawer from "./CreateMission/CreateMissionDrawer";
 import PlannedMissionDrawer from "./PlannedMission/PlannedMissionDrawer";
 import CompletedMissionDrawer from "./CompletedMission/CompletedMissionDrawer";
-import TrackingDrawer from "./Tracking/TrackingDrawer";
-import DroneFieldDock from "../../../assets/svg/Drone_FieldDock.svg";
 
 const drawerWidth = 240;
 
@@ -177,11 +175,11 @@ export default function MiniDrawer() {
       Icon: AirplaneTicketIcon,
       component: <CompletedMissionDrawer />,
     },
-    {
-      text: "Track Flight",
-      Icon: NavigationIcon,
-      component: <TrackingDrawer />,
-    },
+    // {
+    //   text: "Track Flight",
+    //   Icon: NavigationIcon,
+    //   component: <TrackingDrawer />,
+    // },
   ];
 
   return (
@@ -234,7 +232,7 @@ export default function MiniDrawer() {
             noWrap
             component="div"
           >
-            FieldDock Mission Dashboard
+            AgriScan Mission Dashboard
           </Typography>
         </Toolbar>
       </AppBar>
@@ -360,17 +358,6 @@ export default function MiniDrawer() {
             </div>
           </Box>
         </Modal>
-        <div //! fix this so it doesnt appear on all page bottoms of drawer component
-          style={{
-            width: "100%",
-            height: "80%",
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "40px",
-          }}
-        >
-          <img src={DroneFieldDock} />
-        </div>
       </Box>
     </Box>
   );

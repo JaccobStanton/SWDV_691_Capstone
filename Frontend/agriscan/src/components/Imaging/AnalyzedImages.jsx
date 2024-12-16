@@ -14,23 +14,14 @@ import {
   TableHead,
   TableRow,
   Paper,
-  FormControl,
-  Select,
-  MenuItem,
-  InputLabel,
+  CircularProgress,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
+import { getAnalyzedImagesFromS3 } from "../../api/api";
+import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
+import "react-toastify/dist/ReactToastify.css"; // Import the new function
 
-const DropdownContainer = styled("div")(({ theme }) => ({
-  width: "81vw",
-  display: "flex",
-  justifyContent: "space-between",
-  marginBottom: "20px",
-}));
-
-// Modal style
 const style = {
   position: "absolute",
   top: "50%",
@@ -45,71 +36,66 @@ const style = {
 function AnalyzedImages() {
   const [missions, setMissions] = useState([]);
   const [selected, setSelected] = useState([]);
-  const [filter, setFilter] = useState("");
   const [open, setOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  //! when i delete this, the table fails.  Recode to make it so table does not fail when removed.
-  const rows = [
-    {
-      id: "1",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "AgriScan_1",
-      type: "Orthomosiac",
-    },
-  ];
-
-  //----------------------fetch the data from  backend.--------------
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchImages = async () => {
       try {
-        const response = await fetch("http://3.15.191.116:8000/api/imageout/"); // Adjust URL
-        const data = await response.json();
-        const processedData = data.map((mission) => ({
-          id: mission.id.toString(),
-          imageName: mission.image.split("/").pop(),
-          date: new Date(mission.time).toLocaleDateString(),
-          time: new Date(mission.time).toLocaleTimeString(),
-          imageType: mission.image_type,
-          image: mission.image, // URL to the image
+        const data = await getAnalyzedImagesFromS3(); // Fetch from the updated /api/images route
+        const missionsData = data.map((item, index) => ({
+          id: index + 1,
+          imageName: item.name || "N/A",
+          date: item.date || "N/A",
+          time: item.time || "N/A",
+          imageType: "Analyzed",
+          imageData: item.url, // URL of the image
+          url: item.url,
         }));
-        setMissions(processedData);
+        setMissions(missionsData);
       } catch (error) {
-        console.error("Failed to fetch missions", error);
+        console.error("Failed to fetch images from S3:", error);
+        setMissions([]); // Set an empty array to avoid rendering issues
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchData();
+    fetchImages();
   }, []);
 
-  //-------------------logic for clicking on icon, and it opens image-------------
-  const handleOpen = (image) => {
-    setSelectedImage(image);
+  const handleOpen = (imageUrl) => {
+    setSelectedImage(imageUrl);
     setOpen(true);
   };
 
   const handleClose = () => setOpen(false);
 
-  //-------------------Filtering mechanism for dropdown to sort table-------------
-  const handleFilterChange = (event) => {
-    setFilter(event.target.value);
-  };
-
-  const filteredMissions = missions.filter(
-    (mission) => filter === "" || mission.imageType === filter
-  );
-
-  //---------------------selecting all in table -------------------------------------
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.id);
+      const newSelecteds = missions.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
-  //---------------------selecting one in table -------------------------------------
+
+  const handleTrashClick = () => {
+    toast.error(
+      "You do not have permission to delete this image. Contact your admin.",
+      {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      }
+    );
+  };
+
   const handleClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
@@ -126,92 +112,61 @@ function AnalyzedImages() {
         selected.slice(selectedIndex + 1)
       );
     }
-
     setSelected(newSelected);
   };
 
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <TableContainer
+        component={Paper}
+        sx={{
+          height: "500px",
+          width: "81vw",
+          border: "1.5px solid #474a4e",
+          boxShadow: "3px 3px 6px 0 rgba(0, 0, 0, 0.65)",
+          borderRadius: "4px",
+          overflowY: "auto",
+          background: "#151617",
         }}
       >
-        <DropdownContainer>
-          <FormControl
-            size="small"
-            sx={{
-              boxShadow: "0 7px 5px 1px rgba(0, 0, 0, 0.2)",
-              width: "30%",
-              ".MuiOutlinedInput-root": {
-                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "rgba(0, 168, 177, 0.65)",
-                  background:
-                    "linear-gradient(1deg, rgba(0, 0, 0, 0), #1b1b1b)",
-                },
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: "#797979", // Change border color on hover to red
-                },
-              },
-              ".MuiInputBase-input": {
-                color: "#FFF", // Customize text color here
-              },
-              // This targets the dropdown icon specifically if needed
-              ".MuiSvgIcon-root": {
-                color: "#FFF", // Adjust dropdown icon color
-              },
-              ".MuiOutlinedInput-notchedOutline": {
-                borderColor: "rgba(0, 168, 177, 0.65)", // Your desired default border color
-              },
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
             }}
           >
-            <InputLabel id="image-type-select-label">Image Type</InputLabel>
-            <Select
-              labelId="image-type-select-label"
-              id="image-type-select"
-              value={filter}
-              label="Image Type"
-              onChange={handleFilterChange}
-            >
-              <MenuItem value="">All</MenuItem>
-              <MenuItem value="Orthomosaic">Orthomosaic</MenuItem>
-              <MenuItem value="Downsample">Downsampled</MenuItem>
-              <MenuItem value="Heatmap">Heatmap</MenuItem>
-            </Select>
-          </FormControl>
-        </DropdownContainer>
-        <TableContainer
-          component={Paper}
-          sx={{
-            height: "500px",
-            maxHeight: "480px", // Ensure this matches the max-height of the diagnostics-log-box if needed
-            width: "81vw",
-            border: "1.5px solid #474a4e",
-            boxShadow: "3px 3px 6px 0 rgba(0, 0, 0, 0.65)",
-            borderRadius: "4px",
-            overflowY: "auto", // This ensures that the overflow applies to the TableContainer as well
-            background: "#151617",
-          }}
-        >
+            <CircularProgress style={{ color: "rgba(0, 168, 177, 0.85)" }} />
+            <p style={{ marginTop: "10px", color: "rgba(0, 168, 177, 0.85)" }}>
+              Loading analyzed images, please wait...
+            </p>
+          </div>
+        ) : (
           <Table
-            aria-label="simple table"
-            sx={{
-              backgroundColor: "#151617",
-              /* also liked #232527 #1C1D1F*/
-            }}
+            aria-label="analyzed images table"
+            sx={{ backgroundColor: "#151617" }}
           >
             <TableHead>
               <TableRow>
                 <TableCell padding="checkbox">
                   <Checkbox
                     indeterminate={
-                      selected.length > 0 && selected.length < rows.length
+                      selected.length > 0 && selected.length < missions.length
                     }
-                    checked={rows.length > 0 && selected.length === rows.length}
+                    checked={
+                      missions.length > 0 && selected.length === missions.length
+                    }
                     onChange={handleSelectAllClick}
                   />
                 </TableCell>
@@ -271,7 +226,6 @@ function AnalyzedImages() {
                 </TableCell>
               </TableRow>
             </TableHead>
-            {/* modal that opens when you click the magnify glass icon */}
             <Modal
               open={open}
               onClose={handleClose}
@@ -279,31 +233,26 @@ function AnalyzedImages() {
               aria-describedby="modal-modal-description"
             >
               <Box sx={style}>
-                <img
-                  src={selectedImage}
-                  alt="Large view"
-                  style={{ maxWidth: "100%", height: "auto" }}
-                />
+                {selectedImage && (
+                  <img
+                    src={selectedImage}
+                    alt="Large view"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+                )}
               </Box>
             </Modal>
             <TableBody>
-              {filteredMissions.map((mission) => {
+              {missions.map((mission) => {
                 const isItemSelected = isSelected(mission.id);
                 return (
                   <TableRow
                     key={mission.id}
+                    hover
+                    selected={isItemSelected}
                     sx={{
-                      borderBottom:
-                        filteredMissions.indexOf(mission) ===
-                        filteredMissions.length - 1
-                          ? "1px solid #ECECED"
-                          : "none",
-
-                      "&:last-child td, &:last-child th": { border: 0 },
                       "&:hover": { backgroundColor: "#474a4e" },
                     }}
-                    selected={isItemSelected}
-                    hover
                   >
                     <TableCell padding="checkbox">
                       <Checkbox
@@ -311,40 +260,45 @@ function AnalyzedImages() {
                         onChange={(event) => handleClick(event, mission.id)}
                       />
                     </TableCell>
-                    <TableCell
-                      sx={{ fontSize: "0.85rem", color: "#ECECED" }}
-                      component="th"
-                      scope="row"
-                    >
+                    <TableCell sx={{ color: "#ECECED" }}>
                       {mission.id}
                     </TableCell>
-                    <TableCell sx={{ fontSize: "0.85rem", color: "#ECECED" }}>
+                    <TableCell sx={{ color: "#ECECED" }}>
                       {mission.imageName}
                     </TableCell>
-                    <TableCell sx={{ fontSize: "0.85rem", color: "#ECECED" }}>
+                    <TableCell sx={{ color: "#ECECED" }}>
                       {mission.date}
                     </TableCell>
-                    <TableCell sx={{ fontSize: "0.85rem", color: "#ECECED" }}>
+                    <TableCell sx={{ color: "#ECECED" }}>
                       {mission.time}
                     </TableCell>
-                    <TableCell sx={{ fontSize: "0.85rem", color: "#ECECED" }}>
+                    <TableCell sx={{ color: "#ECECED" }}>
                       {mission.imageType}
                     </TableCell>
                     <TableCell>
                       <FontAwesomeIcon
                         icon={faMagnifyingGlass}
-                        onClick={() => handleOpen(mission.image)}
-                        className="first-icon"
+                        onClick={() => handleOpen(mission.url)}
+                        style={{
+                          marginRight: "10px",
+                          cursor: "pointer",
+                          color: "#ECECED",
+                        }}
                       />
-                      <a href={mission.image} download>
+                      <a href={mission.url} download={mission.imageName}>
                         <FontAwesomeIcon
                           icon={faFileArrowDown}
-                          className="second-icon"
+                          style={{
+                            marginRight: "10px",
+                            cursor: "pointer",
+                            color: "#ECECED",
+                          }}
                         />
                       </a>
                       <FontAwesomeIcon
                         icon={faTrashCan}
-                        className="second-icon"
+                        style={{ cursor: "pointer", color: "#ECECED" }}
+                        onClick={handleTrashClick}
                       />
                     </TableCell>
                   </TableRow>
@@ -352,9 +306,11 @@ function AnalyzedImages() {
               })}
             </TableBody>
           </Table>
-        </TableContainer>
-      </div>
-    </>
+        )}
+      </TableContainer>
+      <ToastContainer />
+    </div>
   );
 }
+
 export default AnalyzedImages;

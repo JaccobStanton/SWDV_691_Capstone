@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faTrashCan,
@@ -14,133 +14,92 @@ import {
   TableHead,
   TableRow,
   Paper,
+  CircularProgress,
 } from "@mui/material";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import { getDiagnosticsLogsFromS3 } from "../../api/api"; // Replace the previous API method
+import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
+import "react-toastify/dist/ReactToastify.css";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 1200,
+  height: 800,
+  bgcolor: "white",
+  boxShadow: 24,
+};
 
 function MUITable() {
+  const [missions, setMissions] = useState([]);
   const [selected, setSelected] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+  const [loading, setLoading] = useState(true); // Loading state
 
-  // Example data
-  const rows = [
-    {
-      id: "1",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "FieldDock_1",
-      type: "error_808.1",
-    },
-    {
-      id: "2",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "FieldDock_1",
-      type: "error_808.1",
-    },
-    {
-      id: "3",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "FieldDock_1",
-      type: "error_808.1",
-    },
-    {
-      id: "4",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "FieldDock_1",
-      type: "error_808.1",
-    },
-    {
-      id: "5",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "FieldDock_1",
-      type: "error_808.1",
-    },
-    {
-      id: "6",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "FieldDock_1",
-      type: "error_808.1",
-    },
-    {
-      id: "7",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "FieldDock_1",
-      type: "error_808.1",
-    },
-    {
-      id: "8",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "FieldDock_1",
-      type: "error_808.1",
-    },
-    {
-      id: "9",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "FieldDock_1",
-      type: "error_808.1",
-    },
-    {
-      id: "10",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "customer_1",
-      type: "error_808.1",
-    },
-    {
-      id: "11",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "customer_1",
-      type: "error_808.1",
-    },
-    {
-      id: "12",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "customer_1",
-      type: "error_808.1",
-    },
-    {
-      id: "13",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "customer_1",
-      type: "error_808.1",
-    },
-    {
-      id: "14",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "customer_1",
-      type: "error_808.1",
-    },
-    {
-      id: "15",
-      date: "02/20/2021",
-      time: "13:45",
-      customerId: "customer_1",
-      type: "error_808.1",
-    },
-  ];
+  // Fetch data from S3 on component mount
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const data = await getDiagnosticsLogsFromS3(); // Fetch from the updated /api/images route
+        const missionsData = data.map((item, index) => ({
+          id: index + 1,
+          imageName: item.name || "N/A",
+          date: item.date || "N/A",
+          time: item.time || "N/A",
+          imageType: "Diagnostic Log",
+          imageData: item.url, // URL of the image
+          url: item.url,
+        }));
+        setMissions(missionsData);
+      } catch (error) {
+        console.error("Failed to fetch images from S3:", error);
+        setMissions([]); // Set an empty array to avoid rendering issues
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchImages();
+  }, []);
+
+  const handleOpen = (imageData) => {
+    setSelectedImage(imageData);
+    setOpen(true);
+  };
+
+  const handleClose = () => setOpen(false);
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
-      const newSelecteds = rows.map((n) => n.id);
+      const newSelecteds = missions.map((n) => n.id);
       setSelected(newSelecteds);
       return;
     }
     setSelected([]);
   };
 
+  const handleTrashClick = () => {
+    toast.error(
+      "You do not have permission to delete this image. Contact your admin.",
+      {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      }
+    );
+  };
+
   const handleClick = (event, id) => {
     const selectedIndex = selected.indexOf(id);
     let newSelected = [];
-
     if (selectedIndex === -1) {
       newSelected = newSelected.concat(selected, id);
     } else if (selectedIndex === 0) {
@@ -153,154 +112,192 @@ function MUITable() {
         selected.slice(selectedIndex + 1)
       );
     }
-
     setSelected(newSelected);
   };
 
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
-    <TableContainer
-      component={Paper}
-      sx={{
-        maxHeight: "480px", // Ensure this matches the max-height of the diagnostics-log-box if needed
-        width: "81vw",
-        border: "1.5px solid #474a4e",
-        boxShadow: "3px 3px 6px 0 rgba(0, 0, 0, 0.65)",
-        borderRadius: "4px",
-        overflowY: "auto", // This ensures that the overflow applies to the TableContainer as well
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
       }}
     >
-      <Table
-        aria-label="simple table"
-        sx={{ backgroundColor: "#151617" /* also liked #232527 #1C1D1F*/ }}
+      <TableContainer
+        component={Paper}
+        sx={{
+          height: "500px",
+          width: "81vw",
+          border: "1.5px solid #474a4e",
+          boxShadow: "3px 3px 6px 0 rgba(0, 0, 0, 0.65)",
+          borderRadius: "4px",
+          overflowY: "auto",
+          background: "#151617",
+        }}
       >
-        <TableHead>
-          <TableRow>
-            <TableCell padding="checkbox">
-              <Checkbox
-                indeterminate={
-                  selected.length > 0 && selected.length < rows.length
-                }
-                checked={rows.length > 0 && selected.length === rows.length}
-                onChange={handleSelectAllClick}
-              />
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "rgba(0, 168, 177, 0.85)",
-              }}
-            >
-              ID
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "rgba(0, 168, 177, 0.85)",
-              }}
-            >
-              Date
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "rgba(0, 168, 177, 0.85)",
-              }}
-            >
-              Time
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "rgba(0, 168, 177, 0.85)",
-              }}
-            >
-              FieldDockID
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "rgba(0, 168, 177, 0.85)",
-              }}
-            >
-              Type
-            </TableCell>
-            <TableCell
-              sx={{
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "rgba(0, 168, 177, 0.85)",
-              }}
-            >
-              Actions
-            </TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => {
-            const isItemSelected = isSelected(row.id);
-            return (
-              <TableRow
-                key={row.id}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                  "&:hover": { backgroundColor: "#474a4e" },
-                }}
-                selected={isItemSelected}
-              >
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <CircularProgress style={{ color: "rgba(0, 168, 177, 0.85)" }} />
+            <p style={{ marginTop: "10px", color: "rgba(0, 168, 177, 0.85)" }}>
+              Loading images, please wait...
+            </p>
+          </div>
+        ) : (
+          <Table aria-label="images table" sx={{ backgroundColor: "#151617" }}>
+            <TableHead>
+              <TableRow>
                 <TableCell padding="checkbox">
                   <Checkbox
-                    checked={isItemSelected}
-                    onChange={(event) => handleClick(event, row.id)}
+                    indeterminate={
+                      selected.length > 0 && selected.length < missions.length
+                    }
+                    checked={
+                      missions.length > 0 && selected.length === missions.length
+                    }
+                    onChange={handleSelectAllClick}
                   />
-                </TableCell>
-                <TableCell
-                  sx={{ fontSize: "0.85rem", color: "#ECECED" }}
-                  component="th"
-                  scope="row"
-                >
-                  {row.id}
                 </TableCell>
                 <TableCell
                   sx={{
-                    fontSize: "0.85rem",
-                    color: "#ECECED" /* or maybe #ECECED */,
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
                   }}
                 >
-                  {row.date}
+                  ID
                 </TableCell>
-                <TableCell sx={{ fontSize: "0.85rem", color: "#ECECED" }}>
-                  {row.time}
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Log Name
                 </TableCell>
-                <TableCell sx={{ fontSize: "0.85rem", color: "#ECECED" }}>
-                  {row.customerId}
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Date
                 </TableCell>
-                <TableCell sx={{ fontSize: "0.85rem", color: "#ECECED" }}>
-                  {row.type}
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Time
                 </TableCell>
-                <TableCell>
-                  <FontAwesomeIcon
-                    icon={faMagnifyingGlass}
-                    className="first-icon"
-                  />
-                  <FontAwesomeIcon
-                    icon={faFileArrowDown}
-                    className="second-icon"
-                  />
-                  <FontAwesomeIcon icon={faTrashCan} className="second-icon" />
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Log Type
+                </TableCell>
+                <TableCell
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "1rem",
+                    color: "rgba(0, 168, 177, 0.85)",
+                  }}
+                >
+                  Actions
                 </TableCell>
               </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+            </TableHead>
+            <Modal
+              open={open}
+              onClose={handleClose}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={style}>
+                {selectedImage && (
+                  <img
+                    src={selectedImage} // Direct URL for the image
+                    alt="Large view"
+                    style={{ maxWidth: "100%", height: "auto" }}
+                  />
+                )}
+              </Box>
+            </Modal>
+            <TableBody>
+              {missions.map((mission) => {
+                const isItemSelected = isSelected(mission.id);
+                return (
+                  <TableRow
+                    key={mission.id}
+                    hover
+                    selected={isItemSelected}
+                    sx={{
+                      "&:hover": { backgroundColor: "#474a4e" },
+                    }}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isItemSelected}
+                        onChange={(event) => handleClick(event, mission.id)}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.id}
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.imageName}
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.date}
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.time}
+                    </TableCell>
+                    <TableCell sx={{ color: "#ECECED" }}>
+                      {mission.imageType}
+                    </TableCell>
+                    <TableCell>
+                      <a href={mission.url} download={mission.imageName}>
+                        <FontAwesomeIcon
+                          icon={faFileArrowDown}
+                          style={{
+                            marginRight: "10px",
+                            cursor: "pointer",
+                            color: "#ECECED",
+                          }}
+                        />
+                      </a>
+                      <FontAwesomeIcon
+                        icon={faTrashCan}
+                        style={{ cursor: "pointer", color: "#ECECED" }}
+                        onClick={handleTrashClick}
+                      />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
+      </TableContainer>
+      <ToastContainer />
+    </div>
   );
 }
 

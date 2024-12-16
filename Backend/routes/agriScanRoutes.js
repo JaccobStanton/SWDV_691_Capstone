@@ -7,7 +7,7 @@ const express = require("express");
 const router = express.Router();
 const AgriScanSystem = require("../models/AgriScanSystem");
 const Sensor = require("../models/sensor");
-const ImageCollection = require("../models/images");
+// const ImageCollection = require("../models/images");
 
 /**
  * Utility Functions
@@ -33,38 +33,38 @@ function findDroneById(system, droneId) {
 /**
  * Image Routes
  */
-// Fetch all images
-router.get("/images", async (req, res) => {
-  try {
-    const images = await Image.find({}); // Fetch all images from the database
-    res.status(200).json(images);
-  } catch (error) {
-    console.error("Error fetching images:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+// // Fetch all images
+// router.get("/images", async (req, res) => {
+//   try {
+//     const images = await Image.find({}); // Fetch all images from the database
+//     res.status(200).json(images);
+//   } catch (error) {
+//     console.error("Error fetching images:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 // Fetch all images from the "Not Analyzed" collection
-router.get("/images/not-analyzed", async (req, res) => {
-  try {
-    // Query the "Not Analyzed" collection
-    const notAnalyzedCollection = await ImageCollection.findOne({
-      collectionName: "Not Analyzed",
-    });
+// router.get("/images", async (req, res) => {
+//   try {
+//     // Query the "Not Analyzed" collection
+//     const notAnalyzedCollection = await ImageCollection.findOne({
+//       collectionName: "Not Analyzed",
+//     });
 
-    if (!notAnalyzedCollection) {
-      return res
-        .status(404)
-        .json({ error: "Not Analyzed collection not found" });
-    }
+//     if (!notAnalyzedCollection) {
+//       return res
+//         .status(404)
+//         .json({ error: "Not Analyzed collection not found" });
+//     }
 
-    // Return the images array
-    res.status(200).json(notAnalyzedCollection.images);
-  } catch (error) {
-    console.error("Error fetching Not Analyzed images:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-});
+//     // Return the images array
+//     res.status(200).json(notAnalyzedCollection.images);
+//   } catch (error) {
+//     console.error("Error fetching Not Analyzed images:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// });
 
 /**
  * Systems Routes

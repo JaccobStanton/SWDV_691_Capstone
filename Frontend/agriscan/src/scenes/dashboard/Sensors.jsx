@@ -1,19 +1,22 @@
+// src/pages/Sensors.jsx
 import React, { useContext, useState, useEffect } from "react";
 import "../../css/sensors.css";
 import SensorNetwork from "../../components/Sensors/SensorNetwork";
 import GDD from "../../components/Index/GDD";
 import SensorsFieldDock from "../../assets/svg/Wireless_Sensors.svg";
 import SensorStatus from "../../components/Sensors/SensorStatus";
-import RenameSensors from "../../components/Sensors/RenameSensors";
 import EnvCond from "../../components/Index/EnvCond";
 import PlugPlaySensors from "../../components/Sensors/PlugPlaySensors";
-
-// Import AppContext
 import { AppContext } from "../../context/AppContext";
+import { updateSensor } from "../../api/api";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Sensors() {
-  const { selectedSystem, setSelectedSystem } = useContext(AppContext);
+  const { selectedSystem, setSelectedSystem, updateSensorName } =
+    useContext(AppContext);
   const [selectedSensor, setSelectedSensor] = useState(null);
+  const [newSensorName, setNewSensorName] = useState("");
 
   const sensors = selectedSystem?.sensors || [];
 
@@ -26,27 +29,45 @@ function Sensors() {
 
   const handleDropdownChange = (event) => {
     const selectedSensorId = event.target.value;
-
-    // Update the selected sensor
     const sensor = sensors.find((s) => s.id === selectedSensorId);
     setSelectedSensor(sensor);
   };
 
-  // Function to handle renaming a sensor
-  const handleRenameSensor = (sensorId, newName) => {
-    const updatedSensors = selectedSystem?.sensors.map((sensor) =>
-      sensor.id === sensorId ? { ...sensor, name: newName } : sensor
-    );
-
-    setSelectedSystem({
-      ...selectedSystem,
-      sensors: updatedSensors,
-    });
-  };
-
   // Extract battery and lora values from the selected sensor
-  const battery = selectedSensor?.data?.[0]?.battery || "N/A"; // Assuming the first data entry
+  const battery = selectedSensor?.data?.[0]?.battery || "N/A";
   const lora = selectedSensor?.data?.[0]?.lora || 0;
+
+  const handleRenameSensor = async () => {
+    if (!selectedSensor || !selectedSystem) return;
+
+    try {
+      await updateSensor(selectedSystem.id, selectedSensor.id, {
+        name: newSensorName,
+      });
+      updateSensorName(selectedSystem.id, selectedSensor.id, newSensorName);
+      toast.success("Sensor renamed successfully!", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
+      setNewSensorName("");
+    } catch (error) {
+      toast.error("Rename failed. Please try again.", {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      });
+      console.error("Rename failed:", error);
+    }
+  };
 
   return (
     <>
@@ -63,8 +84,8 @@ function Sensors() {
           {selectedSystem && (
             <select
               className="menu-fill"
-              onChange={handleDropdownChange} // Integrated handler
-              value={selectedSensor?.id || ""} // Pre-select the first sensor
+              onChange={handleDropdownChange}
+              value={selectedSensor?.id || ""}
             >
               {sensors.map((sensor) => (
                 <option key={sensor.id} value={sensor.id}>
@@ -84,7 +105,6 @@ function Sensors() {
         </div>
         <div>
           <div className="top">
-            {/* Pass battery and lora props */}
             <SensorStatus battery={battery} lora={lora} />
           </div>
 
@@ -96,17 +116,31 @@ function Sensors() {
             />
           </div>
           <div className="bottom">
-            <RenameSensors
-              selectedSensor={selectedSensor}
-              selectedSystem={selectedSystem}
-              onRenameSensor={handleRenameSensor}
-            />
+            <div className="bottom-centered-row-container">
+              <div className="title-box">Rename Sensor</div>
+              <div className="bottom-inner-content">
+                <input
+                  type="text"
+                  placeholder="Enter Sensor Name"
+                  className="input-group-input"
+                  value={newSensorName}
+                  onChange={(e) => setNewSensorName(e.target.value)}
+                />
+                <button
+                  className="rename-drone-button"
+                  onClick={handleRenameSensor}
+                >
+                  Rename
+                </button>
+              </div>
+            </div>
           </div>
         </div>
         <div>
           <EnvCond />
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 }

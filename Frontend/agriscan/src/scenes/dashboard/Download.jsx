@@ -82,7 +82,7 @@ function Download() {
         {/* Second row of boxes */}
         <div className="grid-row">
           <div className="box">
-            <div className="title-box">FieldDock Images </div>
+            <div className="title-box">AgriScan Images </div>
             <div className="content-container">
               <div className="download-input-group">
                 <input type="text" id="start-date" placeholder="Start Date" />

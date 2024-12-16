@@ -93,7 +93,7 @@ function SelectionGrid() {
 
       {/* //?second box */}
       <div style={gridItemStyle}>
-        <h3 style={h3Style}>Select PheNode Group</h3>
+        <h3 style={h3Style}>Select AgriScan Group</h3>
         <input
           type="text"
           placeholder="Search for customer account"
@@ -125,7 +125,7 @@ function SelectionGrid() {
 
       {/* //?third box */}
       <div style={gridItemStyle}>
-        <h3 style={h3Style}>Select a PheNode</h3>
+        <h3 style={h3Style}>Select a System</h3>
         <input
           type="text"
           placeholder="Search for customer account"
@@ -133,7 +133,7 @@ function SelectionGrid() {
           style={inputStyle}
         />
         <select style={selectStyle}>
-          <option value="">Select a FieldDock account...</option>
+          <option value="">Select a AgriScan account...</option>
           {/* Add options here */}
         </select>
         <FormControlLabel

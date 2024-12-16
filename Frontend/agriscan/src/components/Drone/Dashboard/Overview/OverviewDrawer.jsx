@@ -4,6 +4,7 @@ import Grid from "@mui/material/Unstable_Grid2";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { styled } from "@mui/material/styles";
+import AgriscanDrone from "../../../../assets/svg/Drone_FieldDock.svg";
 
 function OverviewDrawer() {
   const Item = styled(Paper)(({ theme }) => ({
@@ -38,6 +39,17 @@ function OverviewDrawer() {
             </Item>
           </Grid>
         </Grid>
+        <div //! fix this so it doesnt appear on all page bottoms of drawer component
+          style={{
+            width: "100%",
+            height: "1000px",
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "40px",
+          }}
+        >
+          <img src={AgriscanDrone} />
+        </div>
       </Box>
     </>
   );

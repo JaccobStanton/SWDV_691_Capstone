@@ -45,43 +45,74 @@ export async function getSensors() {
     throw error;
   }
 }
-
-// Fetch all images
-export async function getImages() {
+//updating sensor name
+export async function updateSensor(systemId, sensorId, updates) {
   try {
-    const response = await fetch(`${API_BASE_URL}/images`);
+    const response = await axios.patch(
+      `${API_BASE_URL}/systems/${systemId}/sensors/${sensorId}`,
+      updates
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating sensor:", error);
+    throw error;
+  }
+}
+
+// S3 Images
+export async function getImagesFromS3() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/images`); // Adjust for your server URL
     if (!response.ok) {
-      throw new Error(`Failed to fetch images: ${response.statusText}`);
+      throw new Error("Failed to fetch images");
     }
-    return await response.json();
+    const data = await response.json();
+    return data; // data is array of { name, url, date, time, imgType }
   } catch (error) {
     console.error("Error fetching images:", error);
     throw error;
   }
 }
 
-export async function getNotAnalyzedImages() {
+export async function getAnalyzedImagesFromS3() {
   try {
-    const response = await fetch(`${API_BASE_URL}/images/not-analyzed`);
-    if (!response.ok) {
-      throw new Error("Failed to fetch Not Analyzed images");
-    }
-    return await response.json();
+    const response = await axios.get(`${API_BASE_URL}/images/analyzed`);
+    return response.data;
   } catch (error) {
-    console.error("Error fetching Not Analyzed images:", error);
+    console.error("Error fetching analyzed images:", error);
     throw error;
   }
 }
 
+// drone name
 export async function updateDrone(systemId, droneId, updates) {
   try {
     const response = await axios.patch(
-      `/api/systems/${systemId}/drones/${droneId}`,
+      `${API_BASE_URL}/systems/${systemId}/drones/${droneId}`,
       updates
     );
     return response.data;
   } catch (error) {
-    console.error("Failed to update drone:", error);
+    console.error("Error updating drone:", error);
+    throw error;
+  }
+}
+
+export async function getDroneLogsFromS3() {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/logs`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching analyzed images:", error);
+    throw error;
+  }
+}
+export async function getDiagnosticsLogsFromS3() {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/logs/diagnostics`);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching analyzed images:", error);
     throw error;
   }
 }

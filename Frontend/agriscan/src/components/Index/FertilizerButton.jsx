@@ -1,3 +1,4 @@
+// src/components/Index/IrrigationButton.jsx
 import React, { useState, useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import { Modal, Box } from "@mui/material";
@@ -11,9 +12,8 @@ import {
   Title,
   Legend,
 } from "chart.js";
-import FertilizerButton from "./FertilizerButton";
-import CropButton from "./CropButton";
 
+// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -23,16 +23,17 @@ ChartJS.register(
   Legend
 );
 
-function Rainfall() {
-  const [isHovered, setIsHovered] = useState({
-    irrigation: false,
-    fertilizer: false,
-    cropPlanning: false,
-  });
+function FertilizerButton() {
+  // State to manage hover effects on the button
+  const [isHovered, setIsHovered] = useState(false);
+
+  // State to manage modal visibility
   const [open, setOpen] = useState(false);
 
+  // Access the selected system from context
   const { selectedSystem } = useContext(AppContext);
 
+  // Base button styles
   const baseStyle = {
     cursor: "pointer",
     border: "1px solid #48f7f5",
@@ -51,12 +52,15 @@ function Rainfall() {
     ...baseStyle,
     border: hovered ? "1px solid #25c0e9" : baseStyle.border,
     color: hovered ? "white" : baseStyle.color,
+    backgroundColor: "transparent",
   });
 
+  // Function to handle opening the modal
   const handleOpen = () => {
     setOpen(true);
   };
 
+  // Function to handle closing the modal
   const handleClose = () => setOpen(false);
 
   // Prepare data for chart
@@ -75,7 +79,7 @@ function Rainfall() {
     // Extract depths and soilMoisture
     const depths = soilData.map((entry) => entry.depth);
     const moistureValues = soilData.map((entry) =>
-      parseFloat(entry.soilMoisture)
+      parseFloat(entry.electricalConductivity)
     );
 
     hasSensorData = soilData.length > 0;
@@ -84,7 +88,7 @@ function Rainfall() {
       labels: depths,
       datasets: [
         {
-          label: "Soil Moisture (%)",
+          label: "Electrical Conductivity (EC)",
           data: moistureValues,
           backgroundColor: "rgba(72, 247, 245, 0.5)",
           borderColor: "rgba(72, 247, 245, 1)",
@@ -99,37 +103,50 @@ function Rainfall() {
         title: {
           display: false,
         },
+        legend: {
+          labels: {
+            color: "#797979", // Optional: Change legend text color
+          },
+        },
+        tooltip: {
+          enabled: true,
+          backgroundColor: "#333",
+          titleColor: "#fff",
+          bodyColor: "#fff",
+          borderColor: "#797979",
+          borderWidth: 1,
+        },
       },
       scales: {
         y: {
           beginAtZero: true,
           title: {
             display: true,
-            text: "Soil Moisture (%)",
-            color: "#797979", // Optional: Change Y-axis title color
+            text: "Electrical Conductivity (EC)",
+            color: "#797979", // Change Y-axis title color
           },
           grid: {
             color: "#797979", // Set Y-axis grid line color
-            borderColor: "#797979", // Optional: Set Y-axis border color
-            borderWidth: 1, // Optional: Set Y-axis border width
+            borderColor: "#797979", // Set Y-axis border color
+            borderWidth: 1, // Set Y-axis border width
           },
           ticks: {
-            color: "#797979", // Optional: Change Y-axis tick label color
+            color: "#797979", // Change Y-axis tick label color
           },
         },
         x: {
           title: {
             display: true,
             text: "Depth",
-            color: "#797979", // Optional: Change X-axis title color
+            color: "#797979", // Change X-axis title color
           },
           grid: {
             color: "#797979", // Set X-axis grid line color
-            borderColor: "#797979", // Optional: Set X-axis border color
-            borderWidth: 1, // Optional: Set X-axis border width
+            borderColor: "#797979", // Set X-axis border color
+            borderWidth: 1, // Set X-axis border width
           },
           ticks: {
-            color: "#797979", // Optional: Change X-axis tick label color
+            color: "#797979", // Change X-axis tick label color
           },
         },
       },
@@ -138,27 +155,16 @@ function Rainfall() {
 
   return (
     <>
-      <div className="row-parent-box">
-        <div className="title-box">Recommendations</div>
-
-        <button
-          type="button"
-          style={getButtonStyle(isHovered.irrigation)}
-          onMouseEnter={() =>
-            setIsHovered((prev) => ({ ...prev, irrigation: true }))
-          }
-          onMouseLeave={() =>
-            setIsHovered((prev) => ({ ...prev, irrigation: false }))
-          }
-          onClick={handleOpen}
-        >
-          Irrigation
-        </button>
-
-        <FertilizerButton />
-
-        <CropButton />
-      </div>
+      <button
+        type="button"
+        style={getButtonStyle(isHovered)}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onClick={handleOpen}
+        aria-label="Open irrigation recommendations modal"
+      >
+        Fertilizer
+      </button>
 
       {/* Modal for Irrigation */}
       <Modal open={open} onClose={handleClose}>
@@ -178,25 +184,27 @@ function Rainfall() {
           }}
         >
           <h1 style={{ color: "#797979", marginTop: "0" }}>
-            Irrigation Adjustment
+            Fertilizer Adjustment
           </h1>
           <h3 style={{ color: "#797979", marginTop: "10px" }}>
-            Recommendation: Adjust irrigation schedules to target areas with low
-            soil moisture. For example:
+            Recommendation: Monitor electrical conductivity (EC) levels to
+            ensure optimal nutrient availability:
           </h3>
           <p style={{ color: "#797979" }}>
-            - Depths with soil moisture &lt; 17% indicate potential water
-            stress.
+            - EC &lt; 0.75: Nutrient levels may be insufficient; consider adding
+            fertilizers.
           </p>
           <p style={{ color: "#797979" }}>
-            - Depths with soil moisture &gt; 23% may be over-irrigated and could
-            lead to waterlogging.
+            - EC &lt; 0.95: High salinity might harm plants; consider leaching
+            salts with additional water.
           </p>
 
           {hasSensorData ? (
             <Bar data={chartData} options={chartOptions} />
           ) : (
-            <p>No sensor data available to display.</p>
+            <p style={{ color: "#797979" }}>
+              No sensor data available to display.
+            </p>
           )}
         </Box>
       </Modal>
@@ -204,4 +212,4 @@ function Rainfall() {
   );
 }
 
-export default Rainfall;
+export default FertilizerButton;

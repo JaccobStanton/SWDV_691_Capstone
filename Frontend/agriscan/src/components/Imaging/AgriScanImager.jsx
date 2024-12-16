@@ -18,7 +18,9 @@ import {
 } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-import { getNotAnalyzedImages } from "../../api/api";
+import { getImagesFromS3 } from "../../api/api"; // Replace the previous API method
+import { toast, ToastContainer } from "react-toastify"; // Import react-toastify
+import "react-toastify/dist/ReactToastify.css";
 
 const style = {
   position: "absolute",
@@ -38,29 +40,30 @@ function AgriScanImager() {
   const [selectedImage, setSelectedImage] = useState("");
   const [loading, setLoading] = useState(true); // Loading state
 
+  // Fetch data from S3 on component mount
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchImages = async () => {
       try {
-        const data = await getNotAnalyzedImages();
-
+        const data = await getImagesFromS3(); // Fetch from the updated /api/images route
         const missionsData = data.map((item, index) => ({
           id: index + 1,
           imageName: item.name || "N/A",
           date: item.date || "N/A",
           time: item.time || "N/A",
-          imageType: item.imgType || "N/A",
-          imageData: item.url,
+          imageType: "Not Analyzed",
+          imageData: item.url, // URL of the image
           url: item.url,
         }));
         setMissions(missionsData);
       } catch (error) {
-        console.error("Failed to fetch images", error);
+        console.error("Failed to fetch images from S3:", error);
+        setMissions([]); // Set an empty array to avoid rendering issues
       } finally {
-        setLoading(false); // Set loading to false after fetching data
+        setLoading(false);
       }
     };
 
-    fetchData();
+    fetchImages();
   }, []);
 
   const handleOpen = (imageData) => {
@@ -77,6 +80,21 @@ function AgriScanImager() {
       return;
     }
     setSelected([]);
+  };
+
+  const handleTrashClick = () => {
+    toast.error(
+      "You do not have permission to delete this image. Contact your admin.",
+      {
+        position: "bottom-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "dark",
+      }
+    );
   };
 
   const handleClick = (event, id) => {
@@ -214,7 +232,7 @@ function AgriScanImager() {
               <Box sx={style}>
                 {selectedImage && (
                   <img
-                    src={`data:image/png;base64,${selectedImage}`}
+                    src={selectedImage} // Direct URL for the image
                     alt="Large view"
                     style={{ maxWidth: "100%", height: "auto" }}
                   />
@@ -257,17 +275,14 @@ function AgriScanImager() {
                     <TableCell>
                       <FontAwesomeIcon
                         icon={faMagnifyingGlass}
-                        onClick={() => handleOpen(mission.imageData)}
+                        onClick={() => handleOpen(mission.url)}
                         style={{
                           marginRight: "10px",
                           cursor: "pointer",
                           color: "#ECECED",
                         }}
                       />
-                      <a
-                        href={`data:image/png;base64,${mission.imageData}`}
-                        download={mission.imageName}
-                      >
+                      <a href={mission.url} download={mission.imageName}>
                         <FontAwesomeIcon
                           icon={faFileArrowDown}
                           style={{
@@ -280,6 +295,7 @@ function AgriScanImager() {
                       <FontAwesomeIcon
                         icon={faTrashCan}
                         style={{ cursor: "pointer", color: "#ECECED" }}
+                        onClick={handleTrashClick}
                       />
                     </TableCell>
                   </TableRow>
@@ -289,6 +305,7 @@ function AgriScanImager() {
           </Table>
         )}
       </TableContainer>
+      <ToastContainer />
     </div>
   );
 }

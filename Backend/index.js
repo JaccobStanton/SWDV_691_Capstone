@@ -5,6 +5,10 @@ const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const agriScanRoutes = require("./routes/agriScanRoutes");
+const s3ImageRoute = require("./routes/s3ImageRoute");
+const s3ImageRouteAnalyzed = require("./routes/s3ImageRouteAnalyzed");
+const s3LogsRoute = require("./routes/s3LogsRoute");
+const s3DiagnosticsLogsRoute = require("./routes/s3DiagnosticsLogsRoute");
 
 const app = express();
 
@@ -32,6 +36,10 @@ mongoose
 
 // Routes
 app.use("/api", agriScanRoutes);
+app.use("/api", s3ImageRoute);
+app.use("/api", s3ImageRouteAnalyzed);
+app.use("/api", s3LogsRoute);
+app.use("/api", s3DiagnosticsLogsRoute);
 
 // Start the server
 const PORT = process.env.PORT || 5001;

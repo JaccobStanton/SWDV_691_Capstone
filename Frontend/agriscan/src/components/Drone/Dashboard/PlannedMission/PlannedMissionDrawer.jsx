@@ -99,7 +99,7 @@ function PlannedMissionDrawer() {
               <div className="row-parent-box environmental-conditions-box">
                 <div
                   style={{
-                    height: "685px",
+                    height: "76.5vh",
                     display: "flex",
                     flexDirection: "column",
                     width: "80%",
