@@ -1,9 +1,15 @@
 import React, { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../../context/AppContext"; // Import the AppContext
 import NoMissionsPlanned from "./NoMissions";
 import CompletedMissionsCard from "./CompletedMissionCard";
 
 function CompletedMissionsParent() {
+  const navigate = useNavigate();
+
+  const navToDroneDash = () => {
+    navigate("/drone-dashboard");
+  };
   // Access systems from the AppContext
   const { selectedSystem } = useContext(AppContext);
 
@@ -46,7 +52,9 @@ function CompletedMissionsParent() {
             gap: "45px", // Adds space between the two buttons
           }}
         >
-          <button className="view-plan-button">View</button>
+          <button onClick={navToDroneDash} className="view-plan-button">
+            View
+          </button>
         </div>
       </div>
     </div>

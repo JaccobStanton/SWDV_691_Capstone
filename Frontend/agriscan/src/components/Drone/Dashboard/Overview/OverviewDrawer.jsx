@@ -39,18 +39,18 @@ function OverviewDrawer() {
             </Item>
           </Grid>
         </Grid>
-        <div //! fix this so it doesnt appear on all page bottoms of drawer component
-          style={{
-            width: "100%",
-            height: "1000px",
-            display: "flex",
-            justifyContent: "center",
-            marginTop: "40px",
-          }}
-        >
-          <img src={AgriscanDrone} />
-        </div>
       </Box>
+      <div //! fix this so it doesnt appear on all page bottoms of drawer component
+        style={{
+          width: "100%",
+          height: "80%",
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "40px",
+        }}
+      >
+        <img src={AgriscanDrone} />
+      </div>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Unstable_Grid2";
 import Typography from "@mui/material/Typography";
@@ -7,51 +7,16 @@ import { styled } from "@mui/material/styles";
 import NoMissionsDisplayed from "../NoMissions";
 import CompletedMissionsCard from "../../LandingPage/CompletedMissionCard";
 import CompletedMap from "./CompletedMap";
+import { AppContext } from "../../../../context/AppContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function CompletedMissionDrawer() {
-  const [missions, setMissions] = useState([]);
+  // Access systems from the AppContext
+  const { selectedSystem } = useContext(AppContext);
 
-  // Polling the REST API for only "Planned" missions is only updated if the fetched missions data has actually changed
-  useEffect(() => {
-    const fetchMissions = async () => {
-      try {
-        const response = await fetch("http://3.15.191.116:8000/api/missions/");
-        const missionsData = await response.json();
-
-        // Filter missions by status 'Planned'
-        const plannedMissions = missionsData.filter(
-          (mission) => mission.mission_status === "Completed"
-        );
-
-        setMissions((currentMissions) => {
-          let isStateUpdated = false;
-          const updatedMissions = [...currentMissions];
-
-          plannedMissions.forEach((mission) => {
-            const exists = currentMissions.some((m) => m.id === mission.id);
-            if (!exists) {
-              isStateUpdated = true;
-              updatedMissions.push({
-                ...mission,
-                date: mission.mission_date || "Date not set",
-                duration: mission.duration || "Duration not set",
-              });
-            }
-          });
-
-          // Return updated missions if new ones were added, otherwise keep the current state
-          return isStateUpdated ? updatedMissions : currentMissions;
-        });
-      } catch (error) {
-        console.error("Failed to fetch missions", error);
-      }
-    };
-
-    const intervalId = setInterval(fetchMissions, 5000);
-    fetchMissions(); // Fetch immediately on mount, then continue at the interval
-
-    return () => clearInterval(intervalId);
-  }, []);
+  // Extract missions from the selected system
+  const missions = selectedSystem?.missions || [];
 
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -60,6 +25,14 @@ function CompletedMissionDrawer() {
     textAlign: "center",
     color: theme.palette.text.secondary,
   }));
+
+  const handleEditUserClick = () => {
+    // Show a red toast with the error message
+    toast.error("You do not have permissions to view mission waypoints.", {
+      position: "bottom-right", // Position of the toast
+      autoClose: 5000, // Close automatically after 5 seconds
+    });
+  };
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
@@ -126,7 +99,12 @@ function CompletedMissionDrawer() {
                       gap: "45px", // Adds space between the two buttons
                     }}
                   >
-                    <button className="view-plan-button">Waypoints</button>
+                    <button
+                      onClick={handleEditUserClick}
+                      className="view-plan-button"
+                    >
+                      Waypoints
+                    </button>
                   </div>
                 </div>
               </div>
@@ -134,6 +112,7 @@ function CompletedMissionDrawer() {
           </Grid>
         </Grid>
       </Box>
+      <ToastContainer />
     </>
   );
 }

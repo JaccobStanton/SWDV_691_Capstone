@@ -20,7 +20,7 @@ function Misc() {
   return (
     <>
       <div className="row-parent-box">
-        <div className="title-box">Misc</div>
+        <div className="title-box">Photosynthetic Measurements</div>
         <div className="misc-soil-table-parent">
           <div className="menu-parent">
             <select

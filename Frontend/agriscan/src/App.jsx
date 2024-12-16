@@ -30,6 +30,7 @@ import Grid from "@mui/material/Unstable_Grid2/Grid2";
 import SigninPage from "./components/Login/SigninPage";
 import TitleBox from "./components/Login/TitleBox";
 import LoginLayout from "./components/Layout/LoginLayout";
+import CompletedMissionsParent from "./components/Drone/LandingPage/CompletedMissionsParent";
 
 const LayoutWithNavbar = () => (
   <Layout>
@@ -81,6 +82,10 @@ const App = () => {
             <Route path="/Users" element={<Users />} />
             <Route path="/Download" element={<Download />} />
             <Route path="/drone-logs" element={<DroneLogsParent />} />
+            <Route
+              path="/completed-missions"
+              element={<CompletedMissionsParent />}
+            />
           </Route>
           {/* Separate Route outside LayoutWithNavbar for components without NavBar and layout */}
 
